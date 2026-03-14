@@ -49,9 +49,6 @@ val localProperties = Properties().apply {
     }
 }
 
-group = "org.jf"
-version = "0.08"
-
 kotlin {
     jvmToolchain(21)
 }
@@ -69,6 +66,18 @@ tasks {
 
 intellijPlatform {
     buildSearchableOptions = false
+    pluginVerification {
+        ides {
+            create {
+                type = IntelliJPlatformType.IntellijIdea
+                version = "261.22158.46" // 2026.1 eap, March 5, 2026
+            }
+            create {
+                type = IntelliJPlatformType.IntellijIdeaCommunity
+                version = "2025.1" // April 14, 2025
+            }
+        }
+    }
 }
 
 repositories {
@@ -163,9 +172,5 @@ tasks {
         arguments = arguments + listOf("-lib", tokensDir.get().asFile.path)
         outputDirectory = layout.buildDirectory.dir("generated-src/antlr/main/org/jf/smalidea/").get().asFile
         dependsOn(extractTokensTask)
-    }
-
-    patchPluginXml.configure {
-        sinceBuild = provider { null }
     }
 }
