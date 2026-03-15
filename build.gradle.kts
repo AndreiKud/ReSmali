@@ -127,8 +127,15 @@ tasks {
         pluginName = "ReSmali"
         pluginVersion = "0.09"
         pluginDescription = """
-          ReSmali is a fork of the original <a href="https://github.com/JesusFreke/smalidea">smalidea</a> plugin by Ben Gruver (JesusFreke).<br>
-          A smali language plugin for IDEA that supports syntax highlighting, debugging, navigation, etc.
+            Adds support for Smali language:
+            <br>
+            <ul>
+                <li>Highlighting</li>
+                <li>Debugging (registers listing, examining objects state, conditional breakpoints, setting values at runtime, etc.)</li>
+                <li>Basic refactoring</li>
+                <li>Navigation, search</li>
+            </ul>
+            ReSmali is a fork of the original <a href="https://github.com/JesusFreke/smalidea">smalidea</a> plugin by Ben Gruver (JesusFreke).
         """.trimIndent()
 
         changeNotes = null
