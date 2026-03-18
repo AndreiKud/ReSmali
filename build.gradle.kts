@@ -89,11 +89,14 @@ fun JavaExec.setupIdeExec() {
     }
 }
 
+val currentVersion = "0.09"
+version = currentVersion
+
 tasks {
     patchPluginXml {
         pluginId = "dev.resmali"
         pluginName = "ReSmali"
-        pluginVersion = "0.09"
+        pluginVersion = currentVersion
         pluginDescription = """
             Adds support for Smali language:
             <br>
