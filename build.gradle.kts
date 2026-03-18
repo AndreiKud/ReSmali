@@ -106,6 +106,7 @@ tasks {
                 <li>Basic refactoring</li>
                 <li>Navigation, search, structure view</li>
             </ul>
+            <br>
             ReSmali is a fork of the original <a href="https://github.com/JesusFreke/smalidea">smalidea</a> plugin by Ben Gruver (JesusFreke).
         """.trimIndent()
 
