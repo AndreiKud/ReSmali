@@ -208,7 +208,12 @@ public class LazyValue<T extends Value> implements Value {
 
     @Override
     public String toString() {
-        return "LazyValue(name " + registerName + ", slot " + registerNumber + ", type \"" + type + "\")";
+        Value value = getNullableValue(true);
+        if (value != null) {
+            return value.toString();
+        } else {
+            return "null";
+        }
     }
 
     public String getRegisterName() {
