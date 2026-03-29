@@ -136,7 +136,7 @@ tasks {
         vendorEmail = "andreikudrya1995@gmail.com"
         vendorUrl = "https://github.com/AndreiKud"
 
-        sinceBuild = "251.23774.435"
+        sinceBuild = "252.23892.409"
     }
 
     runIde {
