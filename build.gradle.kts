@@ -1,6 +1,9 @@
+@file:Suppress("UnstableApiUsage")
+
 import org.gradle.kotlin.dsl.testImplementation
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.tasks.TestIdeUiTask
 import java.util.Properties
 
 plugins {
@@ -15,6 +18,17 @@ val localProperties = Properties().apply {
     if (localPropertiesFile.exists()) {
         localPropertiesFile.inputStream().use { load(it) }
     }
+}
+
+val integrationTestSourceSet = sourceSets.create("integrationTest") {
+    compileClasspath += sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().output
+}
+val integrationTestImplementation by configurations.getting {
+    extendsFrom(configurations.testImplementation.get())
+}
+val integrationTestRuntimeOnly by configurations.getting {
+    extendsFrom(configurations.testRuntimeOnly.get())
 }
 
 kotlin {
@@ -64,6 +78,7 @@ dependencies {
         bundledPlugin("com.intellij.java")
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Plugin.Java)
+        testFramework(TestFrameworkType.Starter, configurationName = "integrationTestImplementation")
     }
 
     implementation("com.android.tools.smali:smali:3.0.9")
@@ -74,6 +89,11 @@ dependencies {
     antlr("org.antlr:antlr:3.5.3")
 
     testImplementation("junit:junit:4.13.2")
+    integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    integrationTestImplementation("org.assertj:assertj-core:3.27.3")
+    integrationTestImplementation("org.kodein.di:kodein-di-jvm:7.20.2")
+    integrationTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.1")
+    integrationTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // TODO: move from javax.annotations to org.jetbrains.annotations
     implementation("com.github.spotbugs:spotbugs-annotations:4.9.7")
@@ -121,6 +141,25 @@ tasks {
 
     runIde {
         setupIdeExec()
+    }
+
+    val integrationTest by intellijPlatformTesting.testIdeUi.registering {
+        task {
+            description = "Runs integration tests with Starter/Driver."
+            group = "verification"
+
+            testClassesDirs = integrationTestSourceSet.output.classesDirs
+            classpath = integrationTestSourceSet.runtimeClasspath
+            useJUnitPlatform()
+
+            dependsOn(buildPlugin)
+        }
+    }
+    val cleanAllureResults by registering(Delete::class) {
+        delete("allure-results")
+    }
+    withType<TestIdeUiTask>().configureEach {
+        dependsOn(cleanAllureResults)
     }
 
     // https://youtrack.jetbrains.com/articles/IDEA-A-21/IDEA-Latest-Builds-And-Release-Notes

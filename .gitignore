@@ -13,3 +13,5 @@ local.properties
 
 .DS_Store
 /tmp/
+/out/
+/allure-results/
