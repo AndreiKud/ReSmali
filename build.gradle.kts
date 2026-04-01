@@ -153,8 +153,13 @@ tasks {
             useJUnitPlatform()
 
             dependsOn(buildPlugin)
+            systemProperty(
+                "resmali.integration.plugin.path",
+                layout.buildDirectory.file("distributions/ReSmali-$currentVersion.zip").get().asFile.absolutePath,
+            )
         }
     }
+
     val cleanAllureResults by registering(Delete::class) {
         delete("allure-results")
     }

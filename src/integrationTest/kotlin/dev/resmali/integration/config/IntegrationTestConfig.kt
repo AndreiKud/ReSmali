@@ -72,28 +72,18 @@ data class IntegrationTestConfig(
     }
 
     companion object {
+        private const val PLUGIN_PATH_PROPERTY = "resmali.integration.plugin.path"
+
         private fun resolvePath(relativePath: String): Path {
             return Paths.get(relativePath).toAbsolutePath().normalize()
         }
 
         private fun resolvePluginPath(): Path {
-            val distributionsDir = resolvePath("build/distributions")
-            if (!Files.isDirectory(distributionsDir)) {
-                return distributionsDir.resolve("resmali.zip").toAbsolutePath().normalize()
+            val explicitPluginPath: String? = System.getProperty(PLUGIN_PATH_PROPERTY)
+            require(!explicitPluginPath.isNullOrBlank()) {
+                "JVM property '$PLUGIN_PATH_PROPERTY' must not be blank"
             }
-
-            Files.list(distributionsDir).use { stream ->
-                val archive =
-                    stream
-                        .filter { Files.isRegularFile(it) && it.fileName.toString().endsWith(".zip") }
-                        .findFirst()
-                        .orElse(null)
-                if (archive != null) {
-                    return archive.toAbsolutePath().normalize()
-                }
-            }
-
-            return distributionsDir.resolve("resmali.zip").toAbsolutePath().normalize()
+            return Paths.get(explicitPluginPath.trim()).toAbsolutePath().normalize()
         }
     }
 }
