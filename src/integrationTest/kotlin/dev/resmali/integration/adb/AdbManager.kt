@@ -37,12 +37,12 @@ class AdbManager(
     fun launch(packageName: String) {
         runAdb(
             args = listOf("shell", "monkey", "-p", packageName, "-c", "android.intent.category.LAUNCHER", "1"),
-            timeout = Duration.ofSeconds(30),
+            timeout = Duration.ofSeconds(15),
         )
     }
 
     fun setAsDebugApp(packageName: String) {
-        runAdb(listOf("shell", "am", "set-debug-app", "-w", "--persistent", packageName))
+        runAdb(listOf("shell", "am", "set-debug-app", "-w", packageName))
     }
 
     fun clearDebugApp() {

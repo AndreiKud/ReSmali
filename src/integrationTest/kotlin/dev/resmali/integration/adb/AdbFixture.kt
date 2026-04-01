@@ -20,7 +20,7 @@ class AdbFixture(
         adb.verifyAdb()
         adb.waitForDevice()
         adb.clearDebugApp()
-        runCatching { adb.removeForward(config.jdwpLocalPort) }
+        adb.removeForward(config.jdwpLocalPort)
         adb.clearLogcat()
         adb.uninstall(config.appPackage)
         adb.install(config.apkPath)
@@ -28,10 +28,15 @@ class AdbFixture(
     }
 
     fun forwardJdwpToRunningApp() {
-        val pid = waitForPid(config.appPackage, Duration.ofSeconds(config.attachTimeoutSeconds))
-            ?: error("Could not resolve pid for package ${config.appPackage} before timeout.")
+        val pid = waitForPid(
+            config.appPackage,
+            Duration.ofSeconds(config.attachTimeoutSeconds)
+        )
+        if (pid == null) {
+            error("Could not resolve pid for package ${config.appPackage} before timeout.")
+        }
 
-        runCatching { adb.removeForward(config.jdwpLocalPort) }
+        adb.removeForward(config.jdwpLocalPort)
         adb.forwardJdwp(config.jdwpLocalPort, pid)
         jdwpForwardActive = true
     }

@@ -1,24 +1,19 @@
 package dev.resmali.integration.debug
 
 import com.intellij.driver.client.Driver
-import com.intellij.driver.client.Remote
 import com.intellij.driver.client.service
-import com.intellij.driver.client.utility
 import com.intellij.driver.model.LockSemantics
 import com.intellij.driver.model.OnDispatcher
 import com.intellij.driver.sdk.Project
-import com.intellij.driver.sdk.VirtualFile
 import com.intellij.driver.sdk.findFile
 import com.intellij.driver.sdk.openFile
 import com.intellij.driver.sdk.openToolWindow
 import com.intellij.driver.sdk.singleProject
-import com.intellij.driver.sdk.waitFor
 import com.intellij.driver.sdk.waitNotNull
 import com.intellij.driver.sdk.ui.components.common.ideFrame
 import com.intellij.driver.sdk.ui.components.common.toolwindows.DebugToolWindowUi
 import com.intellij.driver.sdk.ui.components.common.toolwindows.debugToolWindow
 import com.intellij.driver.sdk.ui.components.elements.tree
-import com.intellij.driver.sdk.ui.components.elements.verticalScrollBar
 import com.intellij.driver.sdk.ui.xQuery
 import com.intellij.ide.starter.driver.engine.BackgroundRun
 import dev.resmali.integration.adb.AdbFixture
@@ -34,12 +29,11 @@ import dev.resmali.integration.remote.XDebugSessionRef
 import dev.resmali.integration.remote.XDebuggerManagerRef
 import dev.resmali.integration.remote.XDebuggerUtilRef
 import java.nio.file.Files
-import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
 private const val REMOTE_DEBUG_CONFIGURATION_NAME = "IT Remote JDWP"
 private const val DEBUG_VARIABLES_TREE_CLASS = "com.intellij.xdebugger.impl.ui.tree.XDebuggerTree"
-private const val MAX_ATTACH_ATTEMPTS = 3L
+private const val MAX_ATTACH_ATTEMPTS = 3
 
 private const val PARAMS_GROUP = ".params"
 private const val LOCALS_GROUP = ".locals"
@@ -69,7 +63,6 @@ private fun Driver.runDebuggerFlow(config: IntegrationTestConfig, fixture: AdbFi
         breakpointSet = true
 
         fixture.setAsDebugApp()
-        // fixture.triggerCodePath()
         fixture.launchApp()
         fixture.forwardJdwpToRunningApp()
 
@@ -85,8 +78,6 @@ private fun Driver.runDebuggerFlow(config: IntegrationTestConfig, fixture: AdbFi
 
         val hitLocation = assertBreakpointLocation(pausedSession, config)
         val debugTexts = captureDebugPanelTexts()
-
-        // waitFor(timeout = 5.hours, condition = { false })
 
         assertVariableGroups(debugTexts)
         assertExpectedVariables(debugTexts, config.expectedVariables)
@@ -119,18 +110,16 @@ private fun Driver.runDebuggerFlow(config: IntegrationTestConfig, fixture: AdbFi
         )
         throw error
     } finally {
-        runCatching { activeSession?.stop() }
-        runCatching {
-            settingsToCleanup?.let { utility(RunManagerRef::class).getInstance(project).removeConfiguration(it) }
+        activeSession?.stop()
+        settingsToCleanup?.let {
+            utility(RunManagerRef::class).getInstance(project).removeConfiguration(it)
         }
         if (breakpointSet) {
-            runCatching {
-                toggleLineBreakpointWithReadAction(
-                    project = project,
-                    relativePath = config.breakpointFileRelativePath,
-                    line = breakpointLineZeroBased,
-                )
-            }
+            toggleLineBreakpointWithReadAction(
+                project = project,
+                relativePath = config.breakpointFileRelativePath,
+                line = breakpointLineZeroBased,
+            )
         }
     }
 }
@@ -140,7 +129,7 @@ private fun Driver.waitForSingleProject(config: IntegrationTestConfig): Project 
         message = "wait for project to open",
         timeout = config.attachTimeoutSeconds.seconds,
     ) {
-        runCatching { singleProject() }.getOrNull()
+        singleProject()
     }
 }
 
@@ -162,8 +151,11 @@ private fun Driver.createAndStartRemoteDebugConfiguration(
     return withContext(dispatcher = OnDispatcher.EDT) {
         val runManager = utility(RunManagerRef::class).getInstance(project)
         val configurationTypeUtil = utility(ConfigurationTypeUtilRef::class)
-        val remoteType = runCatching { configurationTypeUtil.findConfigurationType("Remote") }
-            .getOrElse { configurationTypeUtil.findConfigurationType("javaRemote") }
+
+        val remoteType = configurationTypeUtil.findConfigurationType("Remote")
+            ?: configurationTypeUtil.findConfigurationType("javaRemote")
+            ?: error("Unable to find \"javaRemote\" or \"Remote\" configuration")
+
         val factory = remoteType.getConfigurationFactories().firstOrNull()
             ?: error("RemoteConfigurationType does not expose configuration factories")
 
@@ -172,11 +164,11 @@ private fun Driver.createAndStartRemoteDebugConfiguration(
         settings.setTemporary(true)
 
         val remoteConfiguration = settings.getConfiguration()
-        this@createAndStartRemoteDebugConfiguration.setPublicField(remoteConfiguration, "HOST", "127.0.0.1")
-        this@createAndStartRemoteDebugConfiguration.setPublicField(remoteConfiguration, "PORT", config.jdwpLocalPort.toString())
-        this@createAndStartRemoteDebugConfiguration.setPublicField(remoteConfiguration, "USE_SOCKET_TRANSPORT", true)
-        this@createAndStartRemoteDebugConfiguration.setPublicField(remoteConfiguration, "SERVER_MODE", false)
-        this@createAndStartRemoteDebugConfiguration.setPublicField(remoteConfiguration, "AUTO_RESTART", false)
+        setPublicField(remoteConfiguration, "HOST", "127.0.0.1")
+        setPublicField(remoteConfiguration, "PORT", config.jdwpLocalPort.toString())
+        setPublicField(remoteConfiguration, "USE_SOCKET_TRANSPORT", true)
+        setPublicField(remoteConfiguration, "SERVER_MODE", false)
+        setPublicField(remoteConfiguration, "AUTO_RESTART", false)
 
         runManager.addConfiguration(settings)
         runManager.setTemporaryConfiguration(settings)
@@ -192,42 +184,26 @@ private fun Driver.attachWithRetries(
     project: Project,
     config: IntegrationTestConfig,
 ): Pair<RunnerAndConfigurationSettingsRef, XDebugSessionRef> {
-    val timeoutPerAttemptSeconds = (config.attachTimeoutSeconds / MAX_ATTACH_ATTEMPTS).coerceAtLeast(10L)
+    val perAttemptTimeoutSeconds = (config.attachTimeoutSeconds / MAX_ATTACH_ATTEMPTS).coerceAtLeast(10L)
     var lastError: Throwable? = null
-
-    for (attempt in 1..MAX_ATTACH_ATTEMPTS) {
-        val settings = createAndStartRemoteDebugConfiguration(project, config)
-
+    val settings = createAndStartRemoteDebugConfiguration(project, config)
+    repeat(MAX_ATTACH_ATTEMPTS) {
         try {
-            val attachedSession = waitForAttachedSession(
-                project = project,
-                configurationName = settings.getName(),
-                timeoutSeconds = timeoutPerAttemptSeconds,
-            )
+            val attachedSession: XDebugSessionRef = waitNotNull(
+                message = "wait for attached debug session",
+                timeout = perAttemptTimeoutSeconds.seconds,
+            ) {
+                findMatchingSession(project, settings.getName())
+            }
             return settings to attachedSession
         } catch (error: Throwable) {
             lastError = error
-            runCatching {
-                utility(RunManagerRef::class).getInstance(project).removeConfiguration(settings)
-            }
-            Thread.sleep(500)
+            utility(RunManagerRef::class).getInstance(project).removeConfiguration(settings)
+            Thread.sleep(1000)
         }
     }
 
     throw (lastError ?: error("Unable to attach debugger session after $MAX_ATTACH_ATTEMPTS attempts"))
-}
-
-private fun Driver.waitForAttachedSession(
-    project: Project,
-    configurationName: String,
-    timeoutSeconds: Long,
-): XDebugSessionRef {
-    return waitNotNull(
-        message = "wait for attached debug session",
-        timeout = timeoutSeconds.seconds,
-    ) {
-        findMatchingSession(project, configurationName)
-    }
 }
 
 private fun Driver.waitForPausedSession(

@@ -64,9 +64,8 @@ class DebugPanelRegistersIntegrationSuite {
         val fixture = AdbFixture(config)
         var primaryFailure: Throwable? = null
 
-        fixture.prepareInstall()
-
         try {
+            fixture.prepareInstall()
             val ideInfo = resolveIdeInfo(
                 productCode = config.ideProductCode,
                 buildType = config.ideBuildType,
