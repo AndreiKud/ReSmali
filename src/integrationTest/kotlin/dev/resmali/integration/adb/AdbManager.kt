@@ -5,6 +5,7 @@ import java.nio.file.Path
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.absolutePathString
+import kotlin.concurrent.thread
 
 class AdbManager(
     private val adbExecutable: String = "adb",
@@ -108,13 +109,30 @@ class AdbManager(
     ): AdbCommandResult {
         val command = listOf(adbExecutable) + args
         val process = ProcessBuilder(command).redirectErrorStream(true).start()
-
-        val output = process.inputStream.bufferedReader().use { it.readText() }
+        var output = ""
+        var readFailure: Throwable? = null
+        val outputReader = thread(start = true, isDaemon = true, name = "adb-output-reader") {
+            runCatching {
+                process.inputStream.bufferedReader().use { it.readText() }
+            }.onSuccess { captured ->
+                output = captured
+            }.onFailure { error ->
+                readFailure = error
+            }
+        }
 
         val finished = process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS)
         if (!finished) {
             process.destroyForcibly()
+            process.waitFor(1, TimeUnit.SECONDS)
+            outputReader.join(1_000)
             throw AdbCommandException("Command timed out after $timeout: ${command.joinToString(" ")}")
+        }
+        outputReader.join(1_000)
+        readFailure?.let { error ->
+            throw AdbCommandException(
+                "Failed to read command output for: ${command.joinToString(" ")}\n${error.message}",
+            )
         }
 
         val exitCode = process.exitValue()
