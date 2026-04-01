@@ -23,6 +23,9 @@ class AdbManager(
     }
 
     fun uninstall(packageName: String) {
+        if (!isPackageInstalled(packageName)) {
+            return
+        }
         runAdb(listOf("uninstall", packageName))
     }
 
@@ -100,6 +103,21 @@ class AdbManager(
             timeout = Duration.ofSeconds(30),
         )
         Files.writeString(outputFile, result.output)
+    }
+
+    private fun isPackageInstalled(packageName: String): Boolean {
+        val result = runAdb(
+            args = listOf("shell", "pm", "path", packageName),
+            failOnNonZeroExit = false,
+        )
+        val output = result.output.lowercase()
+        if ("package:" in output) {
+            return true
+        }
+        if ("not found" in output || "unknown package" in output || "can't find package" in output) {
+            return false
+        }
+        return result.exitCode == 0 && output.isNotBlank()
     }
 
     private fun runAdb(
