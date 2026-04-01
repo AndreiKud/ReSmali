@@ -62,6 +62,7 @@ class DebugPanelRegistersIntegrationSuite {
     fun registersAreVisibleWhenBreakpointHit(config: IntegrationTestConfig) {
         cleanupFixtureIdeaDir(config.smaliProjectPath.toFile())
         val fixture = AdbFixture(config)
+        var primaryFailure: Throwable? = null
 
         fixture.prepareInstall()
 
@@ -89,11 +90,25 @@ class DebugPanelRegistersIntegrationSuite {
                 .runIdeWithDriver()
                 .executeDebugScenario(config, fixture)
         } catch (error: Throwable) {
-            fixture.collectFailureArtifacts(error)
+            primaryFailure = error
+            runCatching { fixture.collectFailureArtifacts(error) }
+                .onFailure(error::addSuppressed)
             throw error
         } finally {
-            fixture.cleanup()
-            runCatching { cleanupFixtureIdeaDir(config.smaliProjectPath.toFile()) }
+            val cleanupErrors = mutableListOf<Throwable>()
+            runCatching { fixture.cleanup() }.onFailure(cleanupErrors::add)
+            runCatching { cleanupFixtureIdeaDir(config.smaliProjectPath.toFile()) }.onFailure(cleanupErrors::add)
+
+            val failure = primaryFailure
+            if (cleanupErrors.isNotEmpty()) {
+                if (failure != null) {
+                    cleanupErrors.forEach(failure::addSuppressed)
+                } else {
+                    val rootCleanupError = cleanupErrors.first()
+                    cleanupErrors.drop(1).forEach(rootCleanupError::addSuppressed)
+                    throw rootCleanupError
+                }
+            }
         }
     }
 
