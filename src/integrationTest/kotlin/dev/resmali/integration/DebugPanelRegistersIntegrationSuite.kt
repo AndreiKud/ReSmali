@@ -53,8 +53,8 @@ class DebugPanelRegistersIntegrationSuite {
     fun newIntelliJIdea() {
         val config = IntegrationTestConfig(
             ideProductCode = "IU",
-            ideBuildType = IdeBuildType.EAP,
-            ideBuildNumber = "261.22158.46",
+            ideBuildType = IdeBuildType.RC,
+            ideBuildNumber = "261.24374.66",
         )
         registersAreVisibleWhenBreakpointHit(config)
     }
@@ -81,6 +81,10 @@ class DebugPanelRegistersIntegrationSuite {
                 PluginConfigurator(this).installPluginFromPath(config.pluginPath)
             }
             patchAndroidStudioDriverClasspath(
+                context = context,
+                productCode = config.ideProductCode,
+            )
+            patchStartupLicensing(
                 context = context,
                 productCode = config.ideProductCode,
             )
@@ -147,6 +151,19 @@ class DebugPanelRegistersIntegrationSuite {
             addLine("-Dcom.android.adblib.tools.process.properties.collector.delay.default=PT30S")
             addLine("-Dcom.android.adblib.tools.process.properties.collector.delay.short=PT30S")
             addLine("-Dcom.android.adblib.tools.process.properties.collector.delay.use.short=true")
+        }
+    }
+
+    private fun patchStartupLicensing(context: IDETestContext, productCode: String) {
+        // Prevent first-run onboarding dialogs from blocking driver automation.
+        context.disableMigrationNotification()
+
+        if (productCode.uppercase() == "IU") {
+            context.applyVMOptionsPatch {
+                // JetBrains recommendation for UI tests on pre-release IDEA builds:
+                // run with release licensing behavior to avoid interactive login/license popups.
+                addLine("-Deap.require.license=release")
+            }
         }
     }
 
