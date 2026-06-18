@@ -19,6 +19,7 @@ data class IntegrationTestConfig(
     val ideBuildType: IdeBuildType = IdeBuildType.RELEASE,
     val testName: String = "smali-debug-attach",
     val pluginPath: Path = resolvePluginPath(),
+    val starterCheckoutPath: Path = resolvePath(".intellijPlatform"),
     val apkPath: Path = resolvePath("src/integrationTest/resources/test-app/app-debug.apk"),
     val smaliProjectPath: Path = resolvePath("src/integrationTest/resources/smali-project"),
     val appPackage: String = "com.example.smalisample",

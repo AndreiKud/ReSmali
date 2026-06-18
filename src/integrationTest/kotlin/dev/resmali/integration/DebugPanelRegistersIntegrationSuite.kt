@@ -1,10 +1,12 @@
 package dev.resmali.integration
 
 import com.intellij.ide.starter.driver.engine.runIdeWithDriver
+import com.intellij.ide.starter.di.di as starterDi
 import com.intellij.ide.starter.ide.IDETestContext
 import com.intellij.ide.starter.ide.IdeProductProvider
 import com.intellij.ide.starter.models.IdeInfo
 import com.intellij.ide.starter.models.TestCase
+import com.intellij.ide.starter.path.GlobalPaths
 import com.intellij.ide.starter.plugins.PluginConfigurator
 import com.intellij.ide.starter.project.LocalProjectInfo
 import com.intellij.ide.starter.runner.Starter
@@ -14,7 +16,10 @@ import dev.resmali.integration.config.IntegrationTestConfig
 import dev.resmali.integration.debug.executeDebugScenario
 import org.assertj.core.util.Preconditions
 import org.junit.jupiter.api.Test
+import org.kodein.di.DI
+import org.kodein.di.bindSingleton
 import java.io.File
+import java.nio.file.Path
 import java.nio.file.Paths
 
 class DebugPanelRegistersIntegrationSuite {
@@ -61,6 +66,7 @@ class DebugPanelRegistersIntegrationSuite {
 
     fun registersAreVisibleWhenBreakpointHit(config: IntegrationTestConfig) {
         cleanupFixtureIdeaDir(config.smaliProjectPath.toFile())
+        configureStarterPaths(config.starterCheckoutPath)
         val fixture = AdbFixture(config)
         var primaryFailure: Throwable? = null
 
@@ -175,5 +181,28 @@ class DebugPanelRegistersIntegrationSuite {
         check(ideaDir.deleteRecursively()) {
             "Failed to delete fixture IDE metadata: ${ideaDir.absolutePath}"
         }
+    }
+
+    private fun configureStarterPaths(starterCheckoutPath: Path) {
+        val normalizedPath = starterCheckoutPath.toAbsolutePath().normalize()
+
+        synchronized(DebugPanelRegistersIntegrationSuite::class.java) {
+            if (configuredStarterCheckoutPath == normalizedPath) {
+                return
+            }
+
+            val baseDi = starterDi
+            starterDi = DI {
+                extend(baseDi, allowOverride = true)
+                bindSingleton<GlobalPaths>(overrides = true) {
+                    object : GlobalPaths(normalizedPath) {}
+                }
+            }
+            configuredStarterCheckoutPath = normalizedPath
+        }
+    }
+
+    companion object {
+        private var configuredStarterCheckoutPath: Path? = null
     }
 }
