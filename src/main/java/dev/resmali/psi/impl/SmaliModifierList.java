@@ -110,19 +110,13 @@ public class SmaliModifierList extends SmaliStubBasedPsiElement<SmaliModifierLis
 
             final TreeElement leaf = Factory.createSingleLeafElement(SmaliTokens.ACCESS_SPEC, name, null, getManager());
 
-            new WriteCommandAction.Simple(getProject(), getContainingFile()) {
-                @Override protected void run() throws Throwable {
-                    addInternal(leaf, leaf, null, null);
-                }
-            }.execute();
+            final Runnable addAccessFlag = () -> addInternal(leaf, leaf, null, null);
+            WriteCommandAction.runWriteCommandAction(getProject(), addAccessFlag);
         } else {
             final PsiElement accessSpec = getAccessFlagElement(name);
             if (accessSpec != null) {
-                new WriteCommandAction.Simple(getProject(), getContainingFile()) {
-                    @Override protected void run() throws Throwable {
-                        accessSpec.delete();
-                    }
-                }.execute();
+                final Runnable deleteAccessFlag = accessSpec::delete;
+                WriteCommandAction.runWriteCommandAction(getProject(), deleteAccessFlag);
             }
         }
     }

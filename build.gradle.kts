@@ -52,7 +52,7 @@ intellijPlatform {
         ides {
             create {
                 type = IntelliJPlatformType.IntellijIdea
-                version = "261.22158.46" // 2026.1 eap, March 5, 2026
+                version = "262.7581.18" // 2026.2 EAP 6, 12 Jun 2026
             }
             create {
                 type = IntelliJPlatformType.IntellijIdeaCommunity
