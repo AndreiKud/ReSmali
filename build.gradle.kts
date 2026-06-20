@@ -118,7 +118,7 @@ fun JavaExec.setupIdeExec() {
     }
 }
 
-val currentVersion = "0.09"
+val currentVersion = "0.11"
 version = currentVersion
 
 tasks {
@@ -139,7 +139,11 @@ tasks {
             ReSmali is a fork of the original <a href="https://github.com/JesusFreke/smalidea">smalidea</a> plugin by Ben Gruver (JesusFreke).
         """.trimIndent()
 
-        changeNotes = null
+        changeNotes = """
+            <ul>
+                <li>Support for 2026.2 (min version raised from 2025.1 to 2025.2).</li>
+            </ul>
+        """.trimIndent()
 
         vendorName = "Andrei Kudryavtsev"
         vendorEmail = "andreikudrya1995@gmail.com"
