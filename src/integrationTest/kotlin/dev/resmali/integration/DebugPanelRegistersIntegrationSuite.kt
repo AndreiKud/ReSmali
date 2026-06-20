@@ -29,7 +29,7 @@ class DebugPanelRegistersIntegrationSuite {
         val config = IntegrationTestConfig(
             ideProductCode = "AI",
             ideBuildType = IdeBuildType.RELEASE,
-            ideBuildNumber = "2025.1.2.11",
+            ideBuildNumber = "2025.2.1.7",
         )
         registersAreVisibleWhenBreakpointHit(config)
     }
@@ -38,8 +38,8 @@ class DebugPanelRegistersIntegrationSuite {
     fun newAndroidStudio() {
         val config = IntegrationTestConfig(
             ideProductCode = "AI",
-            ideBuildType = IdeBuildType.RELEASE,
-            ideBuildNumber = "2025.2.3.9",
+            ideBuildType = IdeBuildType.RC,
+            ideBuildNumber = "2026.1.2.8",
         )
         registersAreVisibleWhenBreakpointHit(config)
     }
