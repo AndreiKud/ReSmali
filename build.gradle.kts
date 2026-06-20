@@ -10,7 +10,7 @@ plugins {
     id("java")
     id("antlr")
     id("org.jetbrains.kotlin.jvm") version "2.3.10"
-    id("org.jetbrains.intellij.platform") version "2.12.0"
+    id("org.jetbrains.intellij.platform") version "2.16.0"
 }
 
 val localProperties = Properties().apply {
@@ -161,6 +161,7 @@ tasks {
     }
 
     val cleanAllureResults by registering(Delete::class) {
+        description = "Clean allure results"
         delete("allure-results")
     }
     withType<TestIdeUiTask>().configureEach {
@@ -195,6 +196,7 @@ tasks {
     }
 
     val extractTokensTask = register<Copy>("extractTokens") {
+        description = "Extract tokens"
         val smaliZip = providers.provider {
             val artifacts = configurations.runtimeClasspath.flatMap {
                 it.incoming.artifacts.resolvedArtifacts
