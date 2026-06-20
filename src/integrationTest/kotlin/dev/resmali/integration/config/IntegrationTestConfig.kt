@@ -23,6 +23,7 @@ data class IntegrationTestConfig(
     val apkPath: Path = resolvePath("src/integrationTest/resources/test-app/app-debug.apk"),
     val smaliProjectPath: Path = resolvePath("src/integrationTest/resources/smali-project"),
     val appPackage: String = "com.example.smalisample",
+    val breakpointTriggerResourceId: String = "$appPackage:id/btn",
     val adbExecutable: String = "adb",
     val jdwpLocalPort: Int = 8706,
     val breakpointFileRelativePath: String = "com/example/smalisample/MainActivity.smali",

@@ -25,6 +25,7 @@ import dev.resmali.integration.remote.RunManagerRef
 import dev.resmali.integration.remote.RunnerAndConfigurationSettingsRef
 import dev.resmali.integration.remote.RunConfigurationRef
 import dev.resmali.integration.remote.JavaObjectRef
+import dev.resmali.integration.remote.XBreakpointRef
 import dev.resmali.integration.remote.XDebugSessionRef
 import dev.resmali.integration.remote.XDebuggerManagerRef
 import dev.resmali.integration.remote.XDebuggerUtilRef
@@ -34,6 +35,7 @@ import kotlin.time.Duration.Companion.seconds
 private const val REMOTE_DEBUG_CONFIGURATION_NAME = "IT Remote JDWP"
 private const val DEBUG_VARIABLES_TREE_CLASS = "com.intellij.xdebugger.impl.ui.tree.XDebuggerTree"
 private const val MAX_ATTACH_ATTEMPTS = 3
+private const val BREAKPOINT_TRIGGER_INTERVAL_MS = 1_000L
 
 private const val PARAMS_GROUP = ".params"
 private const val LOCALS_GROUP = ".locals"
@@ -53,11 +55,11 @@ private fun Driver.runDebuggerFlow(config: IntegrationTestConfig, fixture: AdbFi
     var activeSession: XDebugSessionRef? = null
 
     try {
-        openFile(config.breakpointFileRelativePath, project = project, waitForCodeAnalysis = false)
+        openFile(config.breakpointFileRelativePath, project = project, waitForCodeAnalysis = true)
 
-        toggleLineBreakpointWithReadAction(
+        setLineBreakpointWithReadAction(
             project = project,
-            relativePath = config.breakpointFileRelativePath,
+            config = config,
             line = breakpointLineZeroBased,
         )
         breakpointSet = true
@@ -71,9 +73,14 @@ private fun Driver.runDebuggerFlow(config: IntegrationTestConfig, fixture: AdbFi
 
         // Some IDE builds keep the app in "Waiting For Debugger" even when session state is not reported as suspended.
         // Best-effort resume nudges the VM to continue execution after attach.
-        runCatching { attachedSession.resume() }
+        resumeIfNoFrame(attachedSession)
 
-        val pausedSession = waitForPausedSession(project, settings.getName(), config)
+        val pausedSession = waitForPausedSession(
+            project = project,
+            configurationName = settings.getName(),
+            config = config,
+            triggerBreakpoint = fixture::tapBreakpointTrigger,
+        )
         activeSession = pausedSession
 
         val hitLocation = assertBreakpointLocation(pausedSession, config)
@@ -90,6 +97,7 @@ private fun Driver.runDebuggerFlow(config: IntegrationTestConfig, fixture: AdbFi
                 appendLine("session=${pausedSession.getSessionName()}")
                 appendLine("breakpointFile=${config.breakpointFileRelativePath}")
                 appendLine("breakpointLine=${config.breakpointLine}")
+                appendLine("breakpointTriggerResourceId=${config.breakpointTriggerResourceId}")
                 appendLine("hitFile=${hitLocation.hitFile}")
                 appendLine("hitLine=${hitLocation.hitLine}")
                 appendLine("expectedVariables=${config.expectedVariables}")
@@ -105,7 +113,12 @@ private fun Driver.runDebuggerFlow(config: IntegrationTestConfig, fixture: AdbFi
                 appendLine("status=failure")
                 appendLine("breakpointFile=${config.breakpointFileRelativePath}")
                 appendLine("breakpointLine=${config.breakpointLine}")
+                appendLine("breakpointTriggerResourceId=${config.breakpointTriggerResourceId}")
                 appendLine("error=${error::class.qualifiedName}: ${error.message}")
+                appendLine("debugSessions:")
+                debugSessionSnapshot(project).forEach { appendLine(it) }
+                appendLine("breakpoints:")
+                breakpointSnapshot(project).forEach { appendLine(it) }
             },
         )
         throw error
@@ -115,9 +128,9 @@ private fun Driver.runDebuggerFlow(config: IntegrationTestConfig, fixture: AdbFi
             utility(RunManagerRef::class).getInstance(project).removeConfiguration(it)
         }
         if (breakpointSet) {
-            toggleLineBreakpointWithReadAction(
+            removeLineBreakpoints(
                 project = project,
-                relativePath = config.breakpointFileRelativePath,
+                config = config,
                 line = breakpointLineZeroBased,
             )
         }
@@ -126,21 +139,90 @@ private fun Driver.runDebuggerFlow(config: IntegrationTestConfig, fixture: AdbFi
 
 private fun Driver.waitForSingleProject(config: IntegrationTestConfig): Project {
     return waitNotNull(
-        message = "wait for project to open",
+        message = "Wait for project to open",
         timeout = config.attachTimeoutSeconds.seconds,
     ) {
-        singleProject()
+        singleProjectOrNull()
     }
 }
 
-private fun Driver.toggleLineBreakpointWithReadAction(project: Project, relativePath: String, line: Int) {
+private fun Driver.singleProjectOrNull(): Project? {
+    return try {
+        singleProject()
+    } catch (error: IllegalStateException) {
+        if (error.message == "No projects are opened") {
+            null
+        } else {
+            throw error
+        }
+    }
+}
+
+private fun Driver.setLineBreakpointWithReadAction(project: Project, config: IntegrationTestConfig, line: Int) {
+    removeLineBreakpoints(project, config, line)
+
     withContext(
         dispatcher = OnDispatcher.EDT,
         semantics = LockSemantics.READ_ACTION,
     ) {
-        val file = findFile(relativePath = relativePath, project = project)
-            ?: error("Failed to find file for breakpoint: $relativePath")
-        service<XDebuggerUtilRef>().toggleLineBreakpoint(project, file, line, false)
+        val file = findFile(relativePath = config.breakpointFileRelativePath, project = project)
+            ?: error("Failed to find file for breakpoint: ${config.breakpointFileRelativePath}")
+        val debuggerUtil = service<XDebuggerUtilRef>()
+        check(debuggerUtil.canPutBreakpointAt(project, file, line)) {
+            "Cannot put breakpoint at ${config.breakpointFileRelativePath}:${config.breakpointLine}"
+        }
+        debuggerUtil.toggleLineBreakpoint(project, file, line, temporary = false)
+    }
+
+    waitNotNull(
+        message = "Wait for breakpoint to be registered",
+        timeout = config.attachTimeoutSeconds.seconds,
+    ) {
+        findLineBreakpoint(project, config, line)?.takeIf { it.isEnabled() }
+    }
+}
+
+private fun Driver.removeLineBreakpoints(project: Project, config: IntegrationTestConfig, line: Int) {
+    val breakpointManager = utility(XDebuggerManagerRef::class).getInstance(project).getBreakpointManager()
+    breakpointManager.getAllBreakpoints()
+        .filter { it.matchesLine(config.breakpointFileRelativePath, line) }
+        .forEach { breakpointManager.removeBreakpoint(it) }
+}
+
+private fun Driver.findLineBreakpoint(
+    project: Project,
+    config: IntegrationTestConfig,
+    line: Int,
+): XBreakpointRef? {
+    val breakpointManager = utility(XDebuggerManagerRef::class).getInstance(project).getBreakpointManager()
+    return breakpointManager.getAllBreakpoints()
+        .firstOrNull { it.matchesLine(config.breakpointFileRelativePath, line) }
+}
+
+private fun XBreakpointRef.matchesLine(relativePath: String, line: Int): Boolean {
+    val expectedFileSuffix = relativePath.replace('\\', '/')
+    return runCatching {
+        val position = getSourcePosition() ?: return false
+        val actualFile = position.getFile().getPath().replace('\\', '/')
+        actualFile.endsWith(expectedFileSuffix) && position.getLine() == line
+    }.getOrDefault(false)
+}
+
+private fun Driver.breakpointSnapshot(project: Project): List<String> {
+    return runCatching {
+        val breakpointManager = utility(XDebuggerManagerRef::class).getInstance(project).getBreakpointManager()
+        breakpointManager.getAllBreakpoints().map { breakpoint ->
+            val type = runCatching { "${breakpoint.getType().getId()} (${breakpoint.getType().getTitle()})" }
+                .getOrDefault("<unknown type>")
+            val enabled = runCatching { breakpoint.isEnabled() }.getOrDefault(false)
+            val suspendPolicy = runCatching { breakpoint.getSuspendPolicy().name() }.getOrDefault("<unknown>")
+            val position = runCatching { breakpoint.getSourcePosition() }.getOrNull()
+            val file = runCatching { position?.getFile()?.getPath() }.getOrNull()
+            val line = runCatching { position?.getLine()?.plus(1) }.getOrNull()
+            "type=$type enabled=$enabled suspendPolicy=$suspendPolicy file=$file line=$line"
+        }
+    }.getOrElse { error ->
+        listOf("<failed to collect breakpoint snapshot: ${error::class.qualifiedName}: ${error.message}>")
     }
 }
 
@@ -190,7 +272,7 @@ private fun Driver.attachWithRetries(
     repeat(MAX_ATTACH_ATTEMPTS) {
         try {
             val attachedSession: XDebugSessionRef = waitNotNull(
-                message = "wait for attached debug session",
+                message = "Wait for attached debug session",
                 timeout = perAttemptTimeoutSeconds.seconds,
             ) {
                 findMatchingSession(project, settings.getName())
@@ -206,20 +288,66 @@ private fun Driver.attachWithRetries(
     throw (lastError ?: error("Unable to attach debugger session after $MAX_ATTACH_ATTEMPTS attempts"))
 }
 
+private fun Driver.resumeIfNoFrame(attachedSession: XDebugSessionRef) {
+    runCatching {
+        if (attachedSession.getCurrentStackFrame() != null) {
+            return
+        }
+        withContext(dispatcher = OnDispatcher.EDT) {
+            attachedSession.resume()
+        }
+    }
+}
+
 private fun Driver.waitForPausedSession(
     project: Project,
     configurationName: String,
     config: IntegrationTestConfig,
+    triggerBreakpoint: () -> Boolean,
 ): XDebugSessionRef {
-    return waitNotNull(
-        message = "wait for debug session suspended on breakpoint",
-        timeout = config.hitTimeoutSeconds.seconds,
-    ) {
-        val session = findMatchingSession(project, configurationName) ?: return@waitNotNull null
-        if (!session.isSuspended()) return@waitNotNull null
-        if (session.getCurrentStackFrame() == null) return@waitNotNull null
-        session
+    var lastTriggerAt = 0L
+    var lastTriggerResult = "not attempted"
+    var lastTriggerFailure: Throwable? = null
+
+    try {
+        return waitNotNull(
+            message = "Wait for debug session suspended on breakpoint",
+            timeout = config.hitTimeoutSeconds.seconds,
+        ) {
+            findPausedSession(project, configurationName) ?: run {
+                val now = System.currentTimeMillis()
+                if (now - lastTriggerAt >= BREAKPOINT_TRIGGER_INTERVAL_MS) {
+                    lastTriggerAt = now
+                    runCatching { triggerBreakpoint() }
+                        .onSuccess { tapped ->
+                            lastTriggerResult = if (tapped) {
+                                "tapped ${config.breakpointTriggerResourceId}"
+                            } else {
+                                "view not found: ${config.breakpointTriggerResourceId}"
+                            }
+                        }
+                        .onFailure { error ->
+                            lastTriggerFailure = error
+                            lastTriggerResult = "${error::class.qualifiedName}: ${error.message}"
+                        }
+                }
+                null
+            }
+        }
+    } catch (error: Throwable) {
+        lastTriggerFailure?.let(error::addSuppressed)
+        throw IllegalStateException(
+            "Timed out waiting for breakpoint after UI trigger. Last trigger result: $lastTriggerResult",
+            error,
+        )
     }
+}
+
+private fun Driver.findPausedSession(project: Project, configurationName: String): XDebugSessionRef? {
+    val session = findMatchingSession(project, configurationName) ?: return null
+    if (!session.isSuspended()) return null
+    if (session.getCurrentStackFrame() == null) return null
+    return session
 }
 
 private fun Driver.findMatchingSession(project: Project, configurationName: String): XDebugSessionRef? {
@@ -227,6 +355,23 @@ private fun Driver.findMatchingSession(project: Project, configurationName: Stri
     return manager.getDebugSessions().firstOrNull { session ->
         val sessionName = session.getSessionName()
         sessionName == configurationName || sessionName.contains(configurationName)
+    }
+}
+
+private fun Driver.debugSessionSnapshot(project: Project): List<String> {
+    return runCatching {
+        val manager = utility(XDebuggerManagerRef::class).getInstance(project)
+        manager.getDebugSessions().map { session ->
+            val name = runCatching { session.getSessionName() }.getOrDefault("<unknown>")
+            val suspended = runCatching { session.isSuspended() }.getOrNull()
+            val frame = runCatching { session.getCurrentStackFrame() != null }.getOrNull()
+            val position = runCatching { session.getCurrentPosition() }.getOrNull()
+            val file = runCatching { position?.getFile()?.getPath() }.getOrNull()
+            val line = runCatching { position?.getLine()?.plus(1) }.getOrNull()
+            "name=$name suspended=$suspended hasFrame=$frame file=$file line=$line"
+        }
+    }.getOrElse { error ->
+        listOf("<failed to collect debug sessions: ${error::class.qualifiedName}: ${error.message}>")
     }
 }
 

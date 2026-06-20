@@ -58,8 +58,8 @@ class DebugPanelRegistersIntegrationSuite {
     fun newIntelliJIdea() {
         val config = IntegrationTestConfig(
             ideProductCode = "IU",
-            ideBuildType = IdeBuildType.RC,
-            ideBuildNumber = "261.24374.66",
+            ideBuildType = IdeBuildType.EAP,
+            ideBuildNumber = "262.7581.18",
         )
         registersAreVisibleWhenBreakpointHit(config)
     }
@@ -90,9 +90,9 @@ class DebugPanelRegistersIntegrationSuite {
                 context = context,
                 productCode = config.ideProductCode,
             )
-            patchStartupLicensing(
+            patchStartupPopups(
                 context = context,
-                productCode = config.ideProductCode,
+                config = config,
             )
 
             context
@@ -160,11 +160,12 @@ class DebugPanelRegistersIntegrationSuite {
         }
     }
 
-    private fun patchStartupLicensing(context: IDETestContext, productCode: String) {
+    private fun patchStartupPopups(context: IDETestContext, config: IntegrationTestConfig) {
         // Prevent first-run onboarding dialogs from blocking driver automation.
         context.disableMigrationNotification()
 
-        if (productCode.uppercase() == "IU") {
+        // For EAP this opens the modal "Manage Subscriptions" dialog and blocks driver automation.
+        if (config.ideProductCode == "IU" && config.ideBuildType == IdeBuildType.RC) {
             context.applyVMOptionsPatch {
                 // JetBrains recommendation for UI tests on pre-release IDEA builds:
                 // run with release licensing behavior to avoid interactive login/license popups.

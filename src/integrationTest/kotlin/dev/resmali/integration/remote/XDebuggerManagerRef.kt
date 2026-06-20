@@ -7,4 +7,5 @@ import com.intellij.driver.sdk.Project
 interface XDebuggerManagerRef {
     fun getInstance(project: Project): XDebuggerManagerRef
     fun getDebugSessions(): Array<XDebugSessionRef>
+    fun getBreakpointManager(): XBreakpointManagerRef
 }

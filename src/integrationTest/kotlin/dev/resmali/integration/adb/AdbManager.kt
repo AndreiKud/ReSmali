@@ -68,6 +68,35 @@ class AdbManager(
         runAdb(listOf("forward", "tcp:$localPort", "jdwp:$pid"))
     }
 
+    fun dumpWindowHierarchy(): String {
+        val remotePath = "/sdcard/resmali-window.xml"
+        try {
+            runAdb(
+                args = listOf("shell", "uiautomator", "dump", remotePath),
+                timeout = Duration.ofSeconds(10),
+            )
+            return runAdb(
+                args = listOf("shell", "cat", remotePath),
+                timeout = Duration.ofSeconds(10),
+            ).output
+        } finally {
+            runCatching {
+                runAdb(
+                    args = listOf("shell", "rm", "-f", remotePath),
+                    timeout = Duration.ofSeconds(5),
+                    failOnNonZeroExit = false,
+                )
+            }
+        }
+    }
+
+    fun tap(x: Int, y: Int) {
+        runAdb(
+            args = listOf("shell", "input", "tap", x.toString(), y.toString()),
+            timeout = Duration.ofSeconds(5),
+        )
+    }
+
     fun removeForward(localPort: Int) {
         val result = runAdb(
             args = listOf("forward", "--remove", "tcp:$localPort"),

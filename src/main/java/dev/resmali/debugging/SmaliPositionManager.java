@@ -39,6 +39,7 @@ import com.intellij.debugger.requests.ClassPrepareRequestor;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.ThrowableComputable;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.sun.jdi.Location;
@@ -103,39 +104,31 @@ public class SmaliPositionManager implements PositionManager {
         return ApplicationManager.getApplication().runReadAction(
                 new ThrowableComputable<List<ReferenceType>, NoDataException>() {
                     @Override public List<ReferenceType> compute() throws NoDataException {
-                        if (!(classPosition.getElementAt().getContainingFile() instanceof SmaliFile)) {
-                            throw NoDataException.INSTANCE;
-                        }
-
                         String className = getClassFromPosition(classPosition);
                         return debugProcess.getVirtualMachineProxy().classesByName(className);
                     }
                 });
     }
 
-    @NotNull
-    private String getClassFromPosition(@NotNull final SourcePosition position) {
-        return ApplicationManager.getApplication().runReadAction(new Computable<String>() {
-            @Override public String compute() {
-                SmaliClass smaliClass = ((SmaliFile)position.getElementAt().getContainingFile()).getPsiClass();
-                if (smaliClass == null) {
-                    return "";
-                }
-                return smaliClass.getQualifiedName();
-            }
-        });
+    @NotNull private String getClassFromPosition(@NotNull final SourcePosition position) throws NoDataException {
+        SmaliFile smaliFile = getSmaliFile(position);
+        if (smaliFile == null) {
+            throw NoDataException.INSTANCE;
+        }
+        SmaliClass smaliClass = smaliFile.getPsiClass();
+        if (smaliClass == null || smaliClass.getQualifiedName() == null) {
+            throw NoDataException.INSTANCE;
+        }
+        return smaliClass.getQualifiedName();
     }
 
     @Override @NotNull
     public List<Location> locationsOfLine(@NotNull final ReferenceType type,
                                           @NotNull final SourcePosition position) throws NoDataException {
-        PsiFile containingFile = ApplicationManager.getApplication().runReadAction(new Computable<PsiFile>() {
-            @Override public PsiFile compute() {
-                return position.getElementAt().getContainingFile();
-            }
-        });
+        SmaliFile containingFile = ApplicationManager.getApplication()
+                .runReadAction((Computable<SmaliFile>) () -> getSmaliFile(position));
 
-        if (!(containingFile instanceof SmaliFile)) {
+        if (containingFile == null) {
             throw NoDataException.INSTANCE;
         }
 
@@ -167,16 +160,31 @@ public class SmaliPositionManager implements PositionManager {
     @Override
     public ClassPrepareRequest createPrepareRequest(@NotNull final ClassPrepareRequestor requestor,
                                                     @NotNull final SourcePosition position) throws NoDataException {
-        if (!(position.getFile() instanceof SmaliFile)) {
-            throw NoDataException.INSTANCE;
-        }
-
-        String className = getClassFromPosition(position);
+        String className = ApplicationManager.getApplication()
+                .runReadAction((ThrowableComputable<String, NoDataException>) () -> getClassFromPosition(position));
         return debugProcess.getRequestsManager().createClassPrepareRequest(new ClassPrepareRequestor() {
             @Override
             public void processClassPrepare(DebugProcess debuggerProcess, ReferenceType referenceType) {
                 requestor.processClassPrepare(debuggerProcess, referenceType);
             }
         }, className);
+    }
+
+    @Nullable private SmaliFile getSmaliFile(@NotNull SourcePosition position) {
+        PsiFile sourceFile = position.getFile();
+        if (sourceFile instanceof SmaliFile) {
+            return (SmaliFile)sourceFile;
+        }
+
+        PsiElement element = position.getElementAt();
+        if (element == null) {
+            return null;
+        }
+
+        PsiFile containingFile = element.getContainingFile();
+        if (containingFile instanceof SmaliFile) {
+            return (SmaliFile)containingFile;
+        }
+        return null;
     }
 }
