@@ -176,6 +176,9 @@ public class SmaliAnnotationTest extends LightJavaCodeInsightFixtureTestCase {
 
     public void doTest(PsiAnnotationOwner annotationOwner) {
         Assert.assertEquals(2, annotationOwner.getAnnotations().length);
+        Assert.assertTrue(annotationOwner.hasAnnotations());
+        Assert.assertTrue(annotationOwner.hasAnnotation("my.TestAnnotation"));
+        Assert.assertFalse(annotationOwner.hasAnnotation("my.MissingAnnotation"));
 
         Assert.assertEquals("my.TestAnnotation", annotationOwner.getAnnotations()[0].getQualifiedName());
         PsiJavaCodeReferenceElement annotationNameRef = annotationOwner.getAnnotations()[0].getNameReferenceElement();

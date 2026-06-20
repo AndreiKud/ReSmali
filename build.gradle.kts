@@ -61,7 +61,7 @@ intellijPlatform {
             }
             create {
                 type = IntelliJPlatformType.IntellijIdeaCommunity
-                version = "2025.1" // April 14, 2025
+                version = "2025.2"
             }
         }
     }

@@ -46,9 +46,9 @@ public interface SmaliModifierListOwner extends PsiModifierListOwner, PsiAnnotat
     @NotNull @Override SmaliAnnotation addAnnotation(@NotNull @NonNls String qualifiedName);
     @Nullable @Override SmaliModifierList getModifierList();
     @Override default boolean hasAnnotations() {
-        return PsiAnnotationOwner.super.hasAnnotations();
+        return getAnnotations().length > 0;
     }
     @Override default boolean hasAnnotation(@NotNull String fqn) {
-        return PsiAnnotationOwner.super.hasAnnotation(fqn);
+        return findAnnotation(fqn) != null;
     }
 }
