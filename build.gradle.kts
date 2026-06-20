@@ -36,12 +36,17 @@ kotlin {
 }
 tasks {
     withType<JavaCompile>().configureEach {
-        options.release.set(17)
+        options.release.set(if (name == "compileIntegrationTestJava") 21 else 17)
     }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
-            freeCompilerArgs.add("-Xjdk-release=17")
+            val jvmTargetVersion = if (name == "compileIntegrationTestKotlin") {
+                org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+            } else {
+                org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+            }
+            jvmTarget.set(jvmTargetVersion)
+            freeCompilerArgs.add("-Xjdk-release=${jvmTargetVersion.target}")
         }
     }
 }
@@ -73,7 +78,7 @@ repositories {
 
 dependencies {
     intellijPlatform {
-        intellijIdea("2025.2.5")
+        intellijIdea("2026.1.3")
         // androidStudio("2025.2.3.9")
         bundledPlugin("com.intellij.java")
         testFramework(TestFrameworkType.Platform)
@@ -90,7 +95,11 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
-    integrationTestImplementation("org.assertj:assertj-core:3.27.3")
+
+    // Starter runtime support since we ship with 'kotlin.stdlib.default.dependency = false'
+    integrationTestImplementation(platform("org.jetbrains.kotlin:kotlin-bom:2.3.20"))
+
+    integrationTestImplementation("org.assertj:assertj-core:3.27.7")
     integrationTestImplementation("org.kodein.di:kodein-di-jvm:7.20.2")
     integrationTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.1")
     integrationTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
