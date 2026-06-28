@@ -1,16 +1,16 @@
 package dev.resmali.integration.adb
 
 import dev.resmali.integration.config.IntegrationTestConfig
+import org.w3c.dom.Element
+import org.xml.sax.InputSource
 import java.io.PrintWriter
 import java.io.StringReader
 import java.io.StringWriter
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Duration
-import kotlin.io.path.createDirectories
-import org.w3c.dom.Element
-import org.xml.sax.InputSource
 import javax.xml.parsers.DocumentBuilderFactory
+import kotlin.io.path.createDirectories
 
 class AdbFixture(
     private val config: IntegrationTestConfig,
@@ -34,7 +34,7 @@ class AdbFixture(
     fun forwardJdwpToRunningApp() {
         val pid = waitForPid(
             config.appPackage,
-            Duration.ofSeconds(config.attachTimeoutSeconds)
+            Duration.ofSeconds(config.attachTimeoutSeconds),
         )
         if (pid == null) {
             error("Could not resolve pid for package ${config.appPackage} before timeout.")
@@ -54,8 +54,7 @@ class AdbFixture(
     }
 
     fun tapBreakpointTrigger(): Boolean {
-        val bounds = findViewBounds(adb.dumpWindowHierarchy(), config.breakpointTriggerResourceId)
-            ?: return false
+        val bounds = findViewBounds(adb.dumpWindowHierarchy(), config.breakpointTriggerResourceId) ?: return false
         adb.tap(bounds.centerX, bounds.centerY)
         return true
     }
@@ -91,9 +90,7 @@ class AdbFixture(
     }
 
     private fun findViewBounds(windowHierarchy: String, resourceId: String): UiBounds? {
-        val document = DocumentBuilderFactory.newInstance()
-            .newDocumentBuilder()
-            .parse(InputSource(StringReader(windowHierarchy)))
+        val document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(InputSource(StringReader(windowHierarchy)))
         val nodes = document.getElementsByTagName("node")
         for (i in 0 until nodes.length) {
             val node = nodes.item(i) as? Element ?: continue
@@ -127,6 +124,8 @@ class AdbFixture(
     }
 
     companion object {
-        private val BOUNDS_REGEX = Regex("""\[(\d+),(\d+)]\[(\d+),(\d+)]""")
+        private val BOUNDS_REGEX = Regex(
+            """\[(?<left>\d+),(?<top>\d+)]\[(?<right>\d+),(?<bottom>\d+)]""",
+        )
     }
 }

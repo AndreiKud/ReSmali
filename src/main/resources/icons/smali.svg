@@ -29,12 +29,12 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<svg xmlns="http://www.w3.org/2000/svg"
-     version="1.1"
-     viewBox="-5 -5 110 110">
-    <path id="Path"
-          fill="black" stroke="black" stroke-width="1"
-          d="M 79.59,66.44
+<svg xmlns = "http://www.w3.org/2000/svg"
+     version = "1.1"
+     viewBox = "-5 -5 110 110">
+    <path id = "Path"
+          fill = "black" stroke = "black" stroke-width = "1"
+          d = "M 79.59,66.44
            C 79.59,69.34 78.93,72.20 77.61,75.03
              76.30,77.86 74.45,80.25 72.08,82.22
              69.47,84.34 66.44,86.01 62.97,87.20
@@ -68,5 +68,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
              46.72,44.11 49.68,44.68 53.52,45.34
              57.36,46.00 60.61,46.68 63.28,47.38
              68.69,48.84 72.75,51.06 75.48,54.02
-             78.22,56.98 79.59,61.12 79.59,66.44 Z"/>
+             78.22,56.98 79.59,61.12 79.59,66.44 Z" />
 </svg>

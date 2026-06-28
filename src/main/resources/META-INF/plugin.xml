@@ -33,38 +33,41 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="ReSmali" implementationClass="dev.resmali.SmaliFileType"
-                  fieldName="INSTANCE" language="ReSmali" extensions="smali"/>
-        <syntaxHighlighter key="ReSmali" factoryClass="dev.resmali.highlighter.SmaliHighlighterFactory"/>
+                  fieldName="INSTANCE" language="ReSmali" extensions="smali" />
+        <syntaxHighlighter key="ReSmali" factoryClass="dev.resmali.highlighter.SmaliHighlighterFactory" />
         <lang.syntaxHighlighterFactory language="ReSmali"
-                                       implementationClass="dev.resmali.highlighter.SmaliHighlighterFactory"/>
-        <colorSettingsPage implementation="dev.resmali.SmaliColorsPage"/>
-        <lang.parserDefinition language="ReSmali" implementationClass="dev.resmali.SmaliParserDefinition"/>
-        <lang.ast.factory language="ReSmali" implementationClass="dev.resmali.SmaliASTFactory"/>
-        <java.elementFinder implementation="dev.resmali.psi.index.SmaliClassFinder"/>
-        <stubIndex implementation="dev.resmali.psi.index.SmaliClassNameIndex"/>
+                                       implementationClass="dev.resmali.highlighter.SmaliHighlighterFactory" />
+        <colorSettingsPage implementation="dev.resmali.SmaliColorsPage" />
+        <lang.parserDefinition language="ReSmali" implementationClass="dev.resmali.SmaliParserDefinition" />
+        <lang.ast.factory language="ReSmali" implementationClass="dev.resmali.SmaliASTFactory" />
+        <java.elementFinder implementation="dev.resmali.psi.index.SmaliClassFinder" />
+        <stubIndex implementation="dev.resmali.psi.index.SmaliClassNameIndex" />
 
-        <debugger.positionManagerFactory implementation="dev.resmali.debugging.SmaliPositionManagerFactory"/>
-        <debugger.jvmSteppingCommandProvider implementation="dev.resmali.debugging.SmaliSteppingCommandProvider"/>
-        <debugger.codeFragmentFactory implementation="dev.resmali.debugging.SmaliCodeFragmentFactory"/>
-        <debugger.javaDebugAware implementation="dev.resmali.debugging.SmaliDebugAware"/>
-        <debugger.extraDebugNodesProvider implementation="dev.resmali.debugging.SmaliExtraDebugNodesProvider"/>
+        <debugger.positionManagerFactory implementation="dev.resmali.debugging.SmaliPositionManagerFactory" />
+        <debugger.jvmSteppingCommandProvider implementation="dev.resmali.debugging.SmaliSteppingCommandProvider" />
+        <debugger.codeFragmentFactory implementation="dev.resmali.debugging.SmaliCodeFragmentFactory" />
+        <debugger.javaDebugAware implementation="dev.resmali.debugging.SmaliDebugAware" />
+
+        <!--suppress PluginXmlValidity, experimental -->
+        <debugger.extraDebugNodesProvider implementation="dev.resmali.debugging.SmaliExtraDebugNodesProvider" />
 
         <!--suppress PluginXmlValidity, 2026.1 bug -->
-        <stubElementTypeHolder class="dev.resmali.psi.SmaliStubElementTypes" externalIdPrefix="dev.resmali."/>
+        <stubElementTypeHolder class="dev.resmali.psi.SmaliStubElementTypes" externalIdPrefix="dev.resmali." />
 
         <lang.findUsagesProvider language="ReSmali"
-                                 implementationClass="dev.resmali.findUsages.SmaliFindUsagesProvider"/>
-        <referencesSearch implementation="dev.resmali.findUsages.SmaliClassReferenceSearcher"/>
+                                 implementationClass="dev.resmali.findUsages.SmaliFindUsagesProvider" />
+        <referencesSearch implementation="dev.resmali.findUsages.SmaliClassReferenceSearcher" />
         <lang.psiStructureViewFactory language="ReSmali"
-                                      implementationClass="dev.resmali.structureView.SmaliStructureViewBuilderFactory"/>
-        <usageTargetProvider implementation="dev.resmali.findUsages.SmaliUsageTargetProvider"/>
-        <usageTypeProvider implementation="dev.resmali.findUsages.SmaliUsageTypeProvider"/>
-        <todoIndexer filetype="ReSmali" implementationClass="dev.resmali.highlighter.SmaliTodoIndexer"/>
-        <findUsagesHandlerFactory implementation="dev.resmali.findUsages.SmaliFindUsagesHandlerFactory"/>
+                                      implementationClass="dev.resmali.structureView.SmaliStructureViewBuilderFactory" />
+        <usageTargetProvider implementation="dev.resmali.findUsages.SmaliUsageTargetProvider" />
+        <usageTypeProvider implementation="dev.resmali.findUsages.SmaliUsageTypeProvider" />
+        <todoIndexer filetype="ReSmali" implementationClass="dev.resmali.highlighter.SmaliTodoIndexer" />
+        <findUsagesHandlerFactory implementation="dev.resmali.findUsages.SmaliFindUsagesHandlerFactory" />
 
         <!-- The "Smali" (with a capital S) language is the one registered by Android Studio's smali plugin.
              This substitutor ensures that "ReSmali" language is used instead of AS's "Smali" language. -->
-        <lang.substitutor language="Smali" implementationClass="dev.resmali.SmaliSubstitutor"/>
+        <!--suppress PluginXmlValidity, the language is supplied by Android Studio -->
+        <lang.substitutor language="Smali" implementationClass="dev.resmali.SmaliSubstitutor" />
     </extensions>
 
     <depends>com.intellij.modules.platform</depends>

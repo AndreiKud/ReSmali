@@ -9,22 +9,22 @@ import com.intellij.driver.sdk.findFile
 import com.intellij.driver.sdk.openFile
 import com.intellij.driver.sdk.openToolWindow
 import com.intellij.driver.sdk.singleProject
-import com.intellij.driver.sdk.waitNotNull
 import com.intellij.driver.sdk.ui.components.common.ideFrame
 import com.intellij.driver.sdk.ui.components.common.toolwindows.DebugToolWindowUi
 import com.intellij.driver.sdk.ui.components.common.toolwindows.debugToolWindow
 import com.intellij.driver.sdk.ui.components.elements.tree
 import com.intellij.driver.sdk.ui.xQuery
+import com.intellij.driver.sdk.waitNotNull
 import com.intellij.ide.starter.driver.engine.BackgroundRun
 import dev.resmali.integration.adb.AdbFixture
 import dev.resmali.integration.config.IntegrationTestConfig
-import dev.resmali.integration.remote.DefaultDebugExecutorRef
-import dev.resmali.integration.remote.ProgramRunnerUtilRef
 import dev.resmali.integration.remote.ConfigurationTypeUtilRef
+import dev.resmali.integration.remote.DefaultDebugExecutorRef
+import dev.resmali.integration.remote.JavaObjectRef
+import dev.resmali.integration.remote.ProgramRunnerUtilRef
+import dev.resmali.integration.remote.RunConfigurationRef
 import dev.resmali.integration.remote.RunManagerRef
 import dev.resmali.integration.remote.RunnerAndConfigurationSettingsRef
-import dev.resmali.integration.remote.RunConfigurationRef
-import dev.resmali.integration.remote.JavaObjectRef
 import dev.resmali.integration.remote.XBreakpointRef
 import dev.resmali.integration.remote.XDebugSessionRef
 import dev.resmali.integration.remote.XDebuggerManagerRef
@@ -195,8 +195,7 @@ private fun Driver.findLineBreakpoint(
     line: Int,
 ): XBreakpointRef? {
     val breakpointManager = utility(XDebuggerManagerRef::class).getInstance(project).getBreakpointManager()
-    return breakpointManager.getAllBreakpoints()
-        .firstOrNull { it.matchesLine(config.breakpointFileRelativePath, line) }
+    return breakpointManager.getAllBreakpoints().firstOrNull { it.matchesLine(config.breakpointFileRelativePath, line) }
 }
 
 private fun XBreakpointRef.matchesLine(relativePath: String, line: Int): Boolean {
@@ -305,9 +304,7 @@ private fun Driver.waitForPausedSession(
     config: IntegrationTestConfig,
     triggerBreakpoint: () -> Boolean,
 ): XDebugSessionRef {
-    var lastTriggerAt = 0L
-    var lastTriggerResult = "not attempted"
-    var lastTriggerFailure: Throwable? = null
+    val triggerState = BreakpointTriggerState()
 
     try {
         return waitNotNull(
@@ -316,31 +313,37 @@ private fun Driver.waitForPausedSession(
         ) {
             findPausedSession(project, configurationName) ?: run {
                 val now = System.currentTimeMillis()
-                if (now - lastTriggerAt >= BREAKPOINT_TRIGGER_INTERVAL_MS) {
-                    lastTriggerAt = now
+                if (now - triggerState.lastAttemptAt >= BREAKPOINT_TRIGGER_INTERVAL_MS) {
+                    triggerState.lastAttemptAt = now
                     runCatching { triggerBreakpoint() }
                         .onSuccess { tapped ->
-                            lastTriggerResult = if (tapped) {
+                            triggerState.result = if (tapped) {
                                 "tapped ${config.breakpointTriggerResourceId}"
                             } else {
                                 "view not found: ${config.breakpointTriggerResourceId}"
                             }
                         }
                         .onFailure { error ->
-                            lastTriggerFailure = error
-                            lastTriggerResult = "${error::class.qualifiedName}: ${error.message}"
+                            triggerState.failure = error
+                            triggerState.result = "${error::class.qualifiedName}: ${error.message}"
                         }
                 }
                 null
             }
         }
     } catch (error: Throwable) {
-        lastTriggerFailure?.let(error::addSuppressed)
+        triggerState.failure?.let(error::addSuppressed)
         throw IllegalStateException(
-            "Timed out waiting for breakpoint after UI trigger. Last trigger result: $lastTriggerResult",
+            "Timed out waiting for breakpoint after UI trigger. Last trigger result: ${triggerState.result}",
             error,
         )
     }
+}
+
+private class BreakpointTriggerState {
+    var lastAttemptAt: Long = 0
+    var result: String = "not attempted"
+    var failure: Throwable? = null
 }
 
 private fun Driver.findPausedSession(project: Project, configurationName: String): XDebugSessionRef? {
@@ -423,16 +426,6 @@ private fun collectDebugPanelTexts(debugUi: DebugToolWindowUi): List<String> {
 
 private fun hasVariableGroups(debugTexts: List<String>): Boolean {
     return debugTexts.contains(PARAMS_GROUP) && debugTexts.contains(LOCALS_GROUP)
-}
-
-private fun hasExpectedVariables(debugTexts: List<String>, expectedVariables: Map<String, String>): Boolean {
-    if (expectedVariables.isEmpty()) {
-        return true
-    }
-
-    return expectedVariables.all { (registerName, expectedValue) ->
-        containsExpectedVariable(debugTexts, registerName, expectedValue)
-    }
 }
 
 private fun assertVariableGroups(debugTexts: List<String>) {

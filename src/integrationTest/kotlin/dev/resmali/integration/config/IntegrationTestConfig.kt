@@ -8,9 +8,7 @@ import java.nio.file.Paths
 enum class IdeBuildType(val starterValue: String) {
     RELEASE("release"),
     RC("rc"),
-    PREVIEW("preview"),
     EAP("eap"),
-    NIGHTLY("nightly");
 }
 
 data class IntegrationTestConfig(

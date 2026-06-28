@@ -1,7 +1,6 @@
 package dev.resmali.integration
 
 import com.intellij.ide.starter.driver.engine.runIdeWithDriver
-import com.intellij.ide.starter.di.di as starterDi
 import com.intellij.ide.starter.ide.IDETestContext
 import com.intellij.ide.starter.ide.IdeProductProvider
 import com.intellij.ide.starter.models.IdeInfo
@@ -21,6 +20,7 @@ import org.kodein.di.bindSingleton
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
+import com.intellij.ide.starter.di.di as starterDi
 
 class DebugPanelRegistersIntegrationSuite {
 
@@ -64,7 +64,7 @@ class DebugPanelRegistersIntegrationSuite {
         registersAreVisibleWhenBreakpointHit(config)
     }
 
-    fun registersAreVisibleWhenBreakpointHit(config: IntegrationTestConfig) {
+    private fun registersAreVisibleWhenBreakpointHit(config: IntegrationTestConfig) {
         cleanupFixtureIdeaDir(config.smaliProjectPath.toFile())
         configureStarterPaths(config.starterCheckoutPath)
         val fixture = AdbFixture(config)
@@ -95,13 +95,10 @@ class DebugPanelRegistersIntegrationSuite {
                 config = config,
             )
 
-            context
-                .runIdeWithDriver()
-                .executeDebugScenario(config, fixture)
+            context.runIdeWithDriver().executeDebugScenario(config, fixture)
         } catch (error: Throwable) {
             primaryFailure = error
-            runCatching { fixture.collectFailureArtifacts(error) }
-                .onFailure(error::addSuppressed)
+            runCatching { fixture.collectFailureArtifacts(error) }.onFailure(error::addSuppressed)
             throw error
         } finally {
             val cleanupErrors = mutableListOf<Throwable>()

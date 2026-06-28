@@ -4,30 +4,32 @@ import org.gradle.kotlin.dsl.testImplementation
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.intellij.platform.gradle.tasks.TestIdeUiTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 
 plugins {
     id("java")
     id("antlr")
-    id("org.jetbrains.kotlin.jvm") version "2.3.10"
+    id("org.jetbrains.kotlin.jvm") version "2.4.0"
     id("org.jetbrains.intellij.platform") version "2.16.0"
 }
 
-val localProperties = Properties().apply {
+val localProperties: Properties = Properties().apply {
     val localPropertiesFile = rootProject.file("local.properties")
     if (localPropertiesFile.exists()) {
         localPropertiesFile.inputStream().use { load(it) }
     }
 }
 
-val integrationTestSourceSet = sourceSets.create("integrationTest") {
+val integrationTestSourceSet: SourceSet = sourceSets.create("integrationTest") {
     compileClasspath += sourceSets.main.get().output
     runtimeClasspath += sourceSets.main.get().output
 }
-val integrationTestImplementation by configurations.getting {
+val integrationTestImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.testImplementation.get())
 }
-val integrationTestRuntimeOnly by configurations.getting {
+val integrationTestRuntimeOnly: Configuration by configurations.getting {
     extendsFrom(configurations.testRuntimeOnly.get())
 }
 
@@ -38,12 +40,12 @@ tasks {
     withType<JavaCompile>().configureEach {
         options.release.set(if (name == "compileIntegrationTestJava") 21 else 17)
     }
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    withType<KotlinCompile>().configureEach {
         compilerOptions {
             val jvmTargetVersion = if (name == "compileIntegrationTestKotlin") {
-                org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+                JvmTarget.JVM_21
             } else {
-                org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+                JvmTarget.JVM_17
             }
             jvmTarget.set(jvmTargetVersion)
             freeCompilerArgs.add("-Xjdk-release=${jvmTargetVersion.target}")
@@ -118,7 +120,7 @@ fun JavaExec.setupIdeExec() {
     }
 }
 
-val currentVersion = "0.11"
+val currentVersion: String = "0.11"
 version = currentVersion
 
 tasks {

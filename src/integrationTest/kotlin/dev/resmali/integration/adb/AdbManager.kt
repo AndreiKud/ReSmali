@@ -4,8 +4,8 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Duration
 import java.util.concurrent.TimeUnit
-import kotlin.io.path.absolutePathString
 import kotlin.concurrent.thread
+import kotlin.io.path.absolutePathString
 
 class AdbManager(
     private val adbExecutable: String = "adb",
@@ -112,17 +112,6 @@ class AdbManager(
                 "Command failed with exit code ${result.exitCode}: ${result.command.joinToString(" ")}\n${result.output}",
             )
         }
-    }
-
-    fun sendBroadcast(action: String, targetPackage: String?, stringExtras: Map<String, String> = emptyMap()) {
-        val args = mutableListOf("shell", "am", "broadcast", "-a", action)
-        if (!targetPackage.isNullOrBlank()) {
-            args += listOf("-p", targetPackage)
-        }
-        for ((key, value) in stringExtras) {
-            args += listOf("--es", key, value)
-        }
-        runAdb(args)
     }
 
     fun dumpLogcat(outputFile: Path) {

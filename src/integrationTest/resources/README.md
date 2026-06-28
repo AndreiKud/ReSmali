@@ -1,4 +1,4 @@
-Integration test resources layout:
+Integration-test resource layout:
 
 - `test-app/app-debug.apk` - APK installed by `AdbFixture`.
 - `smali-project/` - smali sources opened as IDE project by Starter.
