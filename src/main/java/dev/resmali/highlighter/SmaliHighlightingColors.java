@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class SmaliHighlightingColors {
+    private static final String EXTERNAL_NAME_PREFIX = "dev.resmali.";
     private static final List<TextAttributesKey> allKeys = Lists.newArrayList();
 
     public static final TextAttributesKey ACCESS = createTextAttributesKey(
@@ -81,7 +82,7 @@ public class SmaliHighlightingColors {
             "VERIFICATION_ERROR_TYPE", DefaultLanguageHighlighterColors.KEYWORD);
 
     private static TextAttributesKey createTextAttributesKey(String name, TextAttributesKey defaultColor) {
-        TextAttributesKey key = TextAttributesKey.createTextAttributesKey(name, defaultColor);
+        TextAttributesKey key = TextAttributesKey.createTextAttributesKey(EXTERNAL_NAME_PREFIX + name, defaultColor);
         allKeys.add(key);
         return key;
     }

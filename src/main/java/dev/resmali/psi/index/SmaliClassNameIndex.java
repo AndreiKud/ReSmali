@@ -38,7 +38,7 @@ import dev.resmali.psi.impl.SmaliClass;
 
 public class SmaliClassNameIndex extends StringStubIndexExtension<SmaliClass> {
     public static final StubIndexKey<String, SmaliClass> KEY =
-            StubIndexKey.createIndexKey("smali.class.name");
+            StubIndexKey.createIndexKey("dev.resmali.class.fqn");
 
     public static final SmaliClassNameIndex INSTANCE = new SmaliClassNameIndex();
 
