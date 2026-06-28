@@ -45,7 +45,11 @@ public class SmaliFileElementType extends IStubFileElementType<SmaliFileStub> {
     public static final SmaliFileElementType INSTANCE = new SmaliFileElementType();
 
     private SmaliFileElementType() {
-        super("smali.FILE", SmaliLanguage.INSTANCE);
+        super("FILE", SmaliLanguage.INSTANCE);
+    }
+
+    @NotNull @Override public String getExternalId() {
+        return "dev.resmali." + super.toString();
     }
 
     @Override public StubBuilder getBuilder() {

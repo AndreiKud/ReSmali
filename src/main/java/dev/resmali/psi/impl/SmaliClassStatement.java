@@ -35,7 +35,7 @@ import com.intellij.lang.ASTNode;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.iface.SmaliModifierListOwner;
 import dev.resmali.psi.leaf.SmaliClassDescriptor;
 import dev.resmali.psi.stub.SmaliClassStatementStub;
@@ -44,7 +44,7 @@ import dev.resmali.util.NameUtils;
 public class SmaliClassStatement extends SmaliStubBasedPsiElement<SmaliClassStatementStub>
         implements SmaliModifierListOwner {
     public SmaliClassStatement(@NotNull SmaliClassStatementStub stub) {
-        super(stub, SmaliElementTypes.CLASS_STATEMENT);
+        super(stub, SmaliStubElementTypes.CLASS_STATEMENT);
     }
 
     public SmaliClassStatement(@NotNull ASTNode node) {
@@ -91,7 +91,7 @@ public class SmaliClassStatement extends SmaliStubBasedPsiElement<SmaliClassStat
 
     @Nullable
     public SmaliModifierList getModifierList() {
-        return getStubOrPsiChild(SmaliElementTypes.MODIFIER_LIST);
+        return getStubOrPsiChild(SmaliStubElementTypes.MODIFIER_LIST);
     }
 
     @NotNull

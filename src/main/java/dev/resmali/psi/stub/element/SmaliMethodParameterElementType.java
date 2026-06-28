@@ -50,10 +50,6 @@ public class SmaliMethodParameterElementType
         super("METHOD_PARAMETER");
     }
 
-    @NotNull @Override public String getExternalId() {
-        return "smali.method_parameter";
-    }
-
     @Override public SmaliMethodParameter createPsi(@NotNull ASTNode node) {
         return new SmaliMethodParameter(node);
     }

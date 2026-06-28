@@ -33,11 +33,11 @@ package dev.resmali.psi.stub;
 
 import com.intellij.psi.stubs.StubBase;
 import com.intellij.psi.stubs.StubElement;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.impl.SmaliClass;
 
 public class SmaliClassStub extends StubBase<SmaliClass> {
     public SmaliClassStub(StubElement parent) {
-        super(parent, SmaliElementTypes.CLASS);
+        super(parent, SmaliStubElementTypes.CLASS);
     }
 }

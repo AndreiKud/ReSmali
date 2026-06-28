@@ -35,16 +35,9 @@ import com.intellij.psi.PsiAnnotationOwner;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliParameterStatement extends SmaliCompositeElement implements PsiAnnotationOwner {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliParameterStatement();
-        }
-    };
-
     public SmaliParameterStatement() {
         super(SmaliElementTypes.PARAMETER_STATEMENT);
     }

@@ -45,10 +45,6 @@ public class SmaliImplementsListElementType
         super("IMPLEMENTS_LIST");
     }
 
-    @NotNull @Override public String getExternalId() {
-        return "smali.implements_list";
-    }
-
     @Override public SmaliImplementsList createPsi(@NotNull SmaliImplementsListStub stub) {
         return new SmaliImplementsList(stub);
     }

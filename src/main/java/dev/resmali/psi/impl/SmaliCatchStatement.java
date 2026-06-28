@@ -33,16 +33,9 @@ package dev.resmali.psi.impl;
 
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.Nullable;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliCatchStatement extends SmaliCompositeElement {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliCatchStatement();
-        }
-    };
-
     public SmaliCatchStatement() {
         super(SmaliElementTypes.CATCH_STATEMENT);
     }

@@ -39,19 +39,12 @@ import com.intellij.psi.scope.PsiScopeProcessor;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 import dev.resmali.psi.leaf.SmaliClassDescriptor;
 import dev.resmali.util.NameUtils;
 
 public class SmaliClassTypeElement extends SmaliTypeElement implements PsiJavaCodeReferenceElement {
     public static final SmaliClassTypeElement[] EMPTY_ARRAY = new SmaliClassTypeElement[0];
-
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliClassTypeElement();
-        }
-    };
 
     @Nullable private SmaliClassType classType = null;
 

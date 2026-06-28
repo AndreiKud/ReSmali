@@ -51,10 +51,6 @@ public class SmaliMethodPrototypeElementType
         super("METHOD_PROTOTYPE");
     }
 
-    @NotNull @Override public String getExternalId() {
-        return "smali.method_prototype";
-    }
-
     @Override public SmaliMethodPrototype createPsi(@NotNull ASTNode node) {
         return new SmaliMethodPrototype(node);
     }

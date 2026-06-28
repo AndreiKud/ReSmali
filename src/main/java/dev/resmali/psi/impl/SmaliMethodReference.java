@@ -43,7 +43,6 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import dev.resmali.SmaliLanguage;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 import javax.annotation.Nonnull;
@@ -51,12 +50,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SmaliMethodReference extends SmaliCompositeElement implements PsiReference {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliMethodReference();
-        }
-    };
-
     @Override public String getName() {
         PsiElement memberName = getMemberName();
         if (memberName == null) {

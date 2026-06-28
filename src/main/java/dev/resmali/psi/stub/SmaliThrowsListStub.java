@@ -33,11 +33,11 @@ package dev.resmali.psi.stub;
 
 import com.intellij.psi.stubs.StubElement;
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.impl.SmaliThrowsList;
 
 public class SmaliThrowsListStub extends SmaliBaseReferenceListStub<SmaliThrowsList> {
     public SmaliThrowsListStub(@NotNull StubElement parent) {
-        super(parent, SmaliElementTypes.THROWS_LIST, new String[0]);
+        super(parent, SmaliStubElementTypes.THROWS_LIST, new String[0]);
     }
 }

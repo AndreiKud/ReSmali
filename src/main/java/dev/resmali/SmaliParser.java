@@ -37,7 +37,7 @@ import com.intellij.lang.PsiParser;
 import com.intellij.psi.tree.IElementType;
 import org.antlr.runtime.RecognitionException;
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.smalideaParser;
 
 public class SmaliParser implements PsiParser {
@@ -57,7 +57,7 @@ public class SmaliParser implements PsiParser {
             ex.printStackTrace();
         }
 
-        classMarker.done(SmaliElementTypes.CLASS);
+        classMarker.done(SmaliStubElementTypes.CLASS);
         rootMarker.done(root);
         return builder.getTreeBuilt();
     }

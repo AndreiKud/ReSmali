@@ -32,16 +32,9 @@
 package dev.resmali.psi.impl;
 
 import org.jetbrains.annotations.Nullable;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliSparseSwitchElement extends SmaliCompositeElement {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliSparseSwitchElement();
-        }
-    };
-
     public SmaliSparseSwitchElement() {
         super(SmaliElementTypes.SPARSE_SWITCH_ELEMENT);
     }

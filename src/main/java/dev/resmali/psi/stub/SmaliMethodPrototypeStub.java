@@ -35,14 +35,14 @@ import com.intellij.psi.stubs.StubBase;
 import com.intellij.psi.stubs.StubElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.impl.SmaliMethodPrototype;
 
 public class SmaliMethodPrototypeStub extends StubBase<SmaliMethodPrototype> {
     @Nullable private final String returnSmaliTypeName;
 
     public SmaliMethodPrototypeStub(@NotNull StubElement parent, @Nullable String returnSmaliTypeName) {
-        super(parent, SmaliElementTypes.METHOD_PROTOTYPE);
+        super(parent, SmaliStubElementTypes.METHOD_PROTOTYPE);
         this.returnSmaliTypeName = returnSmaliTypeName;
     }
 

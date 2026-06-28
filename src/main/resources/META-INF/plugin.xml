@@ -49,7 +49,9 @@
         <debugger.javaDebugAware implementation="dev.resmali.debugging.SmaliDebugAware"/>
         <debugger.extraDebugNodesProvider implementation="dev.resmali.debugging.SmaliExtraDebugNodesProvider"/>
 
-        <stubElementTypeHolder class="dev.resmali.psi.SmaliElementTypes"/>
+        <!--suppress PluginXmlValidity, 2026.1 bug -->
+        <stubElementTypeHolder class="dev.resmali.psi.SmaliStubElementTypes" externalIdPrefix="dev.resmali."/>
+
         <lang.findUsagesProvider language="ReSmali"
                                  implementationClass="dev.resmali.findUsages.SmaliFindUsagesProvider"/>
         <referencesSearch implementation="dev.resmali.findUsages.SmaliClassReferenceSearcher"/>

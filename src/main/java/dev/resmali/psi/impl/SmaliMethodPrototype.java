@@ -36,13 +36,13 @@ import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.stub.SmaliMethodPrototypeStub;
 import dev.resmali.util.NameUtils;
 
 public class SmaliMethodPrototype extends SmaliStubBasedPsiElement<SmaliMethodPrototypeStub> {
     public SmaliMethodPrototype(@NotNull SmaliMethodPrototypeStub stub) {
-        super(stub, SmaliElementTypes.METHOD_PROTOTYPE);
+        super(stub, SmaliStubElementTypes.METHOD_PROTOTYPE);
     }
 
     public SmaliMethodPrototype(@NotNull ASTNode node) {
@@ -73,6 +73,6 @@ public class SmaliMethodPrototype extends SmaliStubBasedPsiElement<SmaliMethodPr
 
     @NotNull
     public SmaliMethodParamList getParameterList() {
-        return getRequiredStubOrPsiChild(SmaliElementTypes.METHOD_PARAM_LIST);
+        return getRequiredStubOrPsiChild(SmaliStubElementTypes.METHOD_PARAM_LIST);
     }
 }

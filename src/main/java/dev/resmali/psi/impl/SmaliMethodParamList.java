@@ -35,7 +35,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.stub.SmaliMethodParamListStub;
 
 import java.util.Arrays;
@@ -43,7 +43,7 @@ import java.util.Arrays;
 public class SmaliMethodParamList extends SmaliStubBasedPsiElement<SmaliMethodParamListStub>
         implements PsiParameterList {
     public SmaliMethodParamList(@NotNull SmaliMethodParamListStub stub) {
-        super(stub, SmaliElementTypes.METHOD_PARAM_LIST);
+        super(stub, SmaliStubElementTypes.METHOD_PARAM_LIST);
     }
 
     public SmaliMethodParamList(@NotNull ASTNode node) {
@@ -51,7 +51,7 @@ public class SmaliMethodParamList extends SmaliStubBasedPsiElement<SmaliMethodPa
     }
 
     @NotNull @Override public SmaliMethodParameter[] getParameters() {
-        return getStubOrPsiChildren(SmaliElementTypes.METHOD_PARAMETER, new SmaliMethodParameter[0]);
+        return getStubOrPsiChildren(SmaliStubElementTypes.METHOD_PARAMETER, new SmaliMethodParameter[0]);
     }
 
     @Override public int getParameterIndex(PsiParameter parameter) {

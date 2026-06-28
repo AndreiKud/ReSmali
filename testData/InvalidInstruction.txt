@@ -1,4 +1,4 @@
-smali.FILE
+FILE
   SmaliClass(CLASS)
     SmaliExtendsList(EXTENDS_LIST)
       <empty list>

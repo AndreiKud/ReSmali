@@ -43,16 +43,9 @@ import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliAnnotationElementName extends SmaliCompositeElement implements PsiIdentifier, PsiReference {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliAnnotationElementName();
-        }
-    };
-
     public SmaliAnnotationElementName() {
         super(SmaliElementTypes.ANNOTATION_ELEMENT_NAME);
     }

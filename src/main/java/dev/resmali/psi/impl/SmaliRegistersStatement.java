@@ -33,16 +33,9 @@ package dev.resmali.psi.impl;
 
 import org.jetbrains.annotations.NotNull;
 import dev.resmali.SmaliTokens;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliRegistersStatement extends SmaliCompositeElement {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliRegistersStatement();
-        }
-    };
-
     public SmaliRegistersStatement() {
         super(SmaliElementTypes.REGISTERS_STATEMENT);
     }

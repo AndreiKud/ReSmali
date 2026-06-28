@@ -32,16 +32,9 @@
 package dev.resmali.psi.impl;
 
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliRegisterReference extends SmaliCompositeElement {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliRegisterReference();
-        }
-    };
-
     public SmaliRegisterReference() {
         super(SmaliElementTypes.REGISTER_REFERENCE);
     }

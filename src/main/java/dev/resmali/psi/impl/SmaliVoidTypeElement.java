@@ -33,16 +33,9 @@ package dev.resmali.psi.impl;
 
 import com.intellij.psi.PsiType;
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliVoidTypeElement extends SmaliTypeElement {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliVoidTypeElement();
-        }
-    };
-
     public SmaliVoidTypeElement() {
         super(SmaliElementTypes.VOID_TYPE);
     }

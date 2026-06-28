@@ -33,16 +33,9 @@ package dev.resmali.psi.impl;
 
 import com.intellij.psi.PsiAnnotationParameterList;
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliAnnotationParameterList extends SmaliCompositeElement implements PsiAnnotationParameterList {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliAnnotationParameterList();
-        }
-    };
-
     public SmaliAnnotationParameterList() {
         super(SmaliElementTypes.ANNOTATION_PARAMETER_LIST);
     }

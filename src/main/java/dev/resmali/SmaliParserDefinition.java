@@ -45,7 +45,7 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.impl.SmaliFile;
 import dev.resmali.psi.stub.element.SmaliStubElementType;
 
@@ -59,7 +59,7 @@ public class SmaliParserDefinition implements ParserDefinition {
     }
 
     @Override public IFileElementType getFileNodeType() {
-        return SmaliElementTypes.FILE;
+        return SmaliStubElementTypes.FILE;
     }
 
     private static final TokenSet WHITESPACE = TokenSet.create(TokenType.WHITE_SPACE);

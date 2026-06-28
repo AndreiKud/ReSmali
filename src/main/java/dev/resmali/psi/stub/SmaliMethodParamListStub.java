@@ -35,10 +35,10 @@ import com.intellij.psi.stubs.StubBase;
 import com.intellij.psi.stubs.StubElement;
 import dev.resmali.psi.impl.SmaliMethodParamList;
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 
 public class SmaliMethodParamListStub extends StubBase<SmaliMethodParamList> {
     public SmaliMethodParamListStub(@NotNull StubElement parent) {
-        super(parent, SmaliElementTypes.METHOD_PARAM_LIST);
+        super(parent, SmaliStubElementTypes.METHOD_PARAM_LIST);
     }
 }

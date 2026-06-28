@@ -35,17 +35,10 @@ import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.impl.source.codeStyle.CodeEditUtil;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 import dev.resmali.psi.leaf.SmaliSimpleName;
 
 public class SmaliMemberName extends SmaliCompositeElement implements PsiIdentifier {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliMemberName();
-        }
-    };
-
     public SmaliMemberName() {
         super(SmaliElementTypes.MEMBER_NAME);
     }

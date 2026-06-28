@@ -31,16 +31,9 @@
 
 package dev.resmali.psi.impl;
 
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliSourceStatement extends SmaliCompositeElement {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliSourceStatement();
-        }
-    };
-
     public SmaliSourceStatement() {
         super(SmaliElementTypes.SOURCE_STATEMENT);
     }

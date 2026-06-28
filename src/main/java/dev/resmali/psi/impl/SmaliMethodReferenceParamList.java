@@ -32,16 +32,9 @@
 package dev.resmali.psi.impl;
 
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliMethodReferenceParamList extends SmaliCompositeElement {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliMethodReferenceParamList();
-        }
-    };
-
     public SmaliMethodReferenceParamList() {
         super(SmaliElementTypes.METHOD_REFERENCE_PARAM_LIST);
     }

@@ -33,11 +33,11 @@ package dev.resmali.psi.stub;
 
 import com.intellij.psi.stubs.StubElement;
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.impl.SmaliImplementsList;
 
 public class SmaliImplementsListStub extends SmaliBaseReferenceListStub<SmaliImplementsList> {
     public SmaliImplementsListStub(@NotNull StubElement parent, @NotNull String[] smaliTypeNames) {
-        super(parent, SmaliElementTypes.IMPLEMENTS_LIST, smaliTypeNames);
+        super(parent, SmaliStubElementTypes.IMPLEMENTS_LIST, smaliTypeNames);
     }
 }

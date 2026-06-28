@@ -49,10 +49,6 @@ public class SmaliAnnotationElementType extends SmaliStubElementType<SmaliAnnota
         super("ANNOTATION");
     }
 
-    @NotNull @Override public String getExternalId() {
-        return "smali.annotation";
-    }
-
     @Override public SmaliAnnotation createPsi(@NotNull SmaliAnnotationStub stub) {
         return new SmaliAnnotation(stub);
     }

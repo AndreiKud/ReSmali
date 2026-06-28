@@ -49,10 +49,6 @@ public class SmaliMethodElementType extends SmaliStubElementType<SmaliMethodStub
         super("METHOD");
     }
 
-    @NotNull @Override public String getExternalId() {
-        return "smali.method";
-    }
-
     @Override public SmaliMethod createPsi(@NotNull SmaliMethodStub stub) {
         return new SmaliMethod(stub);
     }

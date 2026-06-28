@@ -33,16 +33,9 @@ package dev.resmali.psi.impl;
 
 import com.intellij.psi.PsiType;
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliPrimitiveTypeElement extends SmaliTypeElement {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliPrimitiveTypeElement();
-        }
-    };
-
     public SmaliPrimitiveTypeElement() {
         super(SmaliElementTypes.PRIMITIVE_TYPE);
     }

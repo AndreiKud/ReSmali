@@ -61,10 +61,6 @@ public class SmaliClassStatementElementType extends SmaliStubElementType<SmaliCl
         return new SmaliClassStatementStub(parentStub, psi.getQualifiedName());
     }
 
-    @NotNull @Override public String getExternalId() {
-        return "smali.class_statement";
-    }
-
     @Override
     public void serialize(@NotNull SmaliClassStatementStub stub, @NotNull StubOutputStream dataStream) throws IOException {
         dataStream.writeName(stub.getQualifiedName());

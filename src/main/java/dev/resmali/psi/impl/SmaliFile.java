@@ -41,7 +41,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import dev.resmali.SmaliFileType;
 import dev.resmali.SmaliLanguage;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 
 public class SmaliFile extends PsiFileBase implements PsiClassOwner {
     public SmaliFile(FileViewProvider viewProvider) {
@@ -56,7 +56,7 @@ public class SmaliFile extends PsiFileBase implements PsiClassOwner {
     public SmaliClass getPsiClass() {
         StubElement<? extends PsiElement> stub = (StubElement<? extends PsiElement>)getStub();
         if (stub != null) {
-            StubElement<SmaliClass> classElement = stub.findChildStubByType(SmaliElementTypes.CLASS);
+            StubElement<SmaliClass> classElement = stub.findChildStubByType(SmaliStubElementTypes.CLASS);
             if (classElement != null) {
                 return classElement.getPsi();
             } else {

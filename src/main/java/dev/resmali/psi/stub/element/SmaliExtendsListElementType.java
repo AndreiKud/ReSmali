@@ -44,10 +44,6 @@ public class SmaliExtendsListElementType extends SmaliBaseReferenceListElementTy
         super("EXTENDS_LIST");
     }
 
-    @NotNull @Override public String getExternalId() {
-        return "smali.extends_list";
-    }
-
     @Override public SmaliExtendsList createPsi(@NotNull SmaliExtendsListStub stub) {
         return new SmaliExtendsList(stub);
     }

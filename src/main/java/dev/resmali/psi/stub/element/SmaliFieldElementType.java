@@ -51,10 +51,6 @@ public class SmaliFieldElementType extends SmaliStubElementType<SmaliFieldStub, 
         super("FIELD");
     }
 
-    @NotNull @Override public String getExternalId() {
-        return "smali.field";
-    }
-
     @Override public SmaliField createPsi(@NotNull SmaliFieldStub stub) {
         return new SmaliField(stub);
     }

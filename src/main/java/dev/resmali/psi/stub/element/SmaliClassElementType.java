@@ -38,7 +38,7 @@ import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.stubs.StubInputStream;
 import com.intellij.psi.stubs.StubOutputStream;
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.impl.SmaliClass;
 import dev.resmali.psi.index.SmaliClassNameIndex;
 import dev.resmali.psi.stub.SmaliClassStatementStub;
@@ -51,10 +51,6 @@ public class SmaliClassElementType extends SmaliStubElementType<SmaliClassStub, 
 
     private SmaliClassElementType() {
         super("CLASS");
-    }
-
-    @NotNull @Override public String getExternalId() {
-        return "smali.class";
     }
 
     @Override public SmaliClass createPsi(@NotNull SmaliClassStub stub) {
@@ -81,7 +77,7 @@ public class SmaliClassElementType extends SmaliStubElementType<SmaliClassStub, 
 
     @Override public void indexStub(@NotNull SmaliClassStub stub, @NotNull IndexSink sink) {
         SmaliClassStatementStub smaliClassStatementStub =
-                (SmaliClassStatementStub)stub.findChildStubByType(SmaliElementTypes.CLASS_STATEMENT);
+                (SmaliClassStatementStub)stub.findChildStubByType(SmaliStubElementTypes.CLASS_STATEMENT);
         if (smaliClassStatementStub != null) {
             String qualifiedName = smaliClassStatementStub.getQualifiedName();
             if (qualifiedName != null) {

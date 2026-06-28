@@ -34,14 +34,14 @@ package dev.resmali.psi.impl;
 import com.google.common.collect.Lists;
 import com.intellij.lang.ASTNode;
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.stub.SmaliImplementsListStub;
 
 import java.util.List;
 
 public class SmaliImplementsList extends SmaliBaseReferenceList<SmaliImplementsListStub> {
     public SmaliImplementsList(@NotNull SmaliImplementsListStub stub) {
-        super(stub, SmaliElementTypes.IMPLEMENTS_LIST);
+        super(stub, SmaliStubElementTypes.IMPLEMENTS_LIST);
     }
 
     public SmaliImplementsList(@NotNull ASTNode node) {

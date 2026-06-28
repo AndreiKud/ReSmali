@@ -38,16 +38,9 @@ import com.intellij.psi.PsiTypeElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import dev.resmali.SmaliTokens;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliArrayTypeElement extends SmaliTypeElement {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliArrayTypeElement();
-        }
-    };
-
     public SmaliArrayTypeElement() {
         super(SmaliElementTypes.ARRAY_TYPE);
     }

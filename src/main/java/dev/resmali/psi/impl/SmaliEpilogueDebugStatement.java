@@ -31,16 +31,9 @@
 
 package dev.resmali.psi.impl;
 
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliEpilogueDebugStatement extends SmaliCompositeElement {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliEpilogueDebugStatement();
-        }
-    };
-
     public SmaliEpilogueDebugStatement() {
         super(SmaliElementTypes.EPILOGUE_DEBUG_STATEMENT);
     }

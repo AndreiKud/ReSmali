@@ -36,16 +36,9 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiAnnotationMemberValue;
 import com.intellij.psi.tree.IElementType;
 import dev.resmali.SmaliTokens;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliLiteral extends SmaliCompositeElement implements PsiAnnotationMemberValue {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliLiteral();
-        }
-    };
-
     public SmaliLiteral() {
         super(SmaliElementTypes.LITERAL);
     }

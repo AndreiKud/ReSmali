@@ -34,7 +34,7 @@ package dev.resmali.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiReferenceList;
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.stub.SmaliThrowsListStub;
 
 public class SmaliThrowsList extends SmaliBaseReferenceList<SmaliThrowsListStub> implements PsiReferenceList {
@@ -43,7 +43,7 @@ public class SmaliThrowsList extends SmaliBaseReferenceList<SmaliThrowsListStub>
     }
 
     public SmaliThrowsList(@NotNull SmaliThrowsListStub stub) {
-        super(stub, SmaliElementTypes.THROWS_LIST);
+        super(stub, SmaliStubElementTypes.THROWS_LIST);
     }
 
     @NotNull @Override public SmaliClassTypeElement[] getReferenceElements() {

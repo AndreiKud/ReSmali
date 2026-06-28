@@ -60,6 +60,7 @@ import org.jetbrains.annotations.Nullable;
 import dev.resmali.dexlib.SmalideaMethod;
 import dev.resmali.dexlib.analysis.SmalideaClassProvider;
 import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.iface.SmaliModifierListOwner;
 import dev.resmali.psi.stub.SmaliMethodStub;
 import dev.resmali.util.IconUtils;
@@ -73,7 +74,7 @@ import java.util.Map;
 public class SmaliMethod extends SmaliStubBasedPsiElement<SmaliMethodStub>
         implements PsiMethod, SmaliModifierListOwner, PsiAnnotationMethod, ItemPresentation {
     public SmaliMethod(@NotNull SmaliMethodStub stub) {
-        super(stub, SmaliElementTypes.METHOD);
+        super(stub, SmaliStubElementTypes.METHOD);
     }
 
     public SmaliMethod(@NotNull ASTNode node) {
@@ -108,7 +109,7 @@ public class SmaliMethod extends SmaliStubBasedPsiElement<SmaliMethodStub>
 
     @NotNull
     public SmaliMethodPrototype getMethodPrototype() {
-        return getRequiredStubOrPsiChild(SmaliElementTypes.METHOD_PROTOTYPE);
+        return getRequiredStubOrPsiChild(SmaliStubElementTypes.METHOD_PROTOTYPE);
     }
 
     @Nullable @Override public PsiType getReturnType() {
@@ -126,7 +127,7 @@ public class SmaliMethod extends SmaliStubBasedPsiElement<SmaliMethodStub>
     }
 
     @NotNull @Override public SmaliThrowsList getThrowsList() {
-        return getRequiredStubOrPsiChild(SmaliElementTypes.THROWS_LIST);
+        return getRequiredStubOrPsiChild(SmaliStubElementTypes.THROWS_LIST);
     }
 
     @Nullable @Override public PsiCodeBlock getBody() {
@@ -234,7 +235,7 @@ public class SmaliMethod extends SmaliStubBasedPsiElement<SmaliMethodStub>
     }
 
     @NotNull @Override public SmaliModifierList getModifierList() {
-        return getRequiredStubOrPsiChild(SmaliElementTypes.MODIFIER_LIST);
+        return getRequiredStubOrPsiChild(SmaliStubElementTypes.MODIFIER_LIST);
     }
 
     @Override public PsiElement setName(@NonNls @NotNull String name) throws IncorrectOperationException {
@@ -282,7 +283,7 @@ public class SmaliMethod extends SmaliStubBasedPsiElement<SmaliMethodStub>
     }
 
     @NotNull @Override public SmaliAnnotation[] getAnnotations() {
-        return getStubOrPsiChildren(SmaliElementTypes.ANNOTATION, new SmaliAnnotation[0]);
+        return getStubOrPsiChildren(SmaliStubElementTypes.ANNOTATION, new SmaliAnnotation[0]);
     }
 
     @NotNull @Override public SmaliAnnotation[] getApplicableAnnotations() {

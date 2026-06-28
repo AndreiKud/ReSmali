@@ -49,10 +49,6 @@ public class SmaliModifierListElementType extends SmaliStubElementType<SmaliModi
         super("MODIFIER_LIST");
     }
 
-    @NotNull @Override public String getExternalId() {
-        return "smali.modifier_list";
-    }
-
     @Override public SmaliModifierList createPsi(@NotNull SmaliModifierListStub stub) {
         return new SmaliModifierList(stub);
     }

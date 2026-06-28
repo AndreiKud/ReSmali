@@ -33,16 +33,9 @@ package dev.resmali.psi.impl;
 
 import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.tree.IElementType;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliLocalName extends SmaliCompositeElement implements PsiIdentifier {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliLocalName();
-        }
-    };
-
     public SmaliLocalName() {
         super(SmaliElementTypes.LOCAL_NAME);
     }

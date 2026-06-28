@@ -38,17 +38,10 @@ import com.intellij.psi.PsiNameValuePair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import dev.resmali.SmaliTokens;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliAnnotationElement extends SmaliCompositeElement implements PsiNameValuePair {
     // TODO: consider making this a stub
-
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliAnnotationElement();
-        }
-    };
 
     public SmaliAnnotationElement() {
         super(SmaliElementTypes.ANNOTATION_ELEMENT);

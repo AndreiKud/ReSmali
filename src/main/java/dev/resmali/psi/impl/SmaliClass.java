@@ -55,7 +55,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import dev.resmali.SmaliIcons;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.iface.SmaliModifierListOwner;
 import dev.resmali.psi.leaf.SmaliClassDescriptor;
 import dev.resmali.psi.stub.SmaliClassStub;
@@ -68,7 +68,7 @@ import java.util.List;
 
 public class SmaliClass extends SmaliStubBasedPsiElement<SmaliClassStub> implements PsiClass, SmaliModifierListOwner, ItemPresentation {
     public SmaliClass(@NotNull SmaliClassStub stub) {
-        super(stub, SmaliElementTypes.CLASS);
+        super(stub, SmaliStubElementTypes.CLASS);
     }
 
     public SmaliClass(@NotNull ASTNode node) {
@@ -94,7 +94,7 @@ public class SmaliClass extends SmaliStubBasedPsiElement<SmaliClassStub> impleme
     }
 
     @Nullable @Override public String getQualifiedName() {
-        SmaliClassStatement classStatement = getStubOrPsiChild(SmaliElementTypes.CLASS_STATEMENT);
+        SmaliClassStatement classStatement = getStubOrPsiChild(SmaliStubElementTypes.CLASS_STATEMENT);
         if (classStatement == null) {
             return null;
         }
@@ -135,7 +135,7 @@ public class SmaliClass extends SmaliStubBasedPsiElement<SmaliClassStub> impleme
     }
 
     @NotNull @Override public SmaliExtendsList getExtendsList() {
-        return getRequiredStubOrPsiChild(SmaliElementTypes.EXTENDS_LIST);
+        return getRequiredStubOrPsiChild(SmaliStubElementTypes.EXTENDS_LIST);
     }
 
     @NotNull public SmaliImplementsStatement[] getImplementsStatements() {
@@ -143,7 +143,7 @@ public class SmaliClass extends SmaliStubBasedPsiElement<SmaliClassStub> impleme
     }
 
     @NotNull @Override public SmaliImplementsList getImplementsList() {
-        return getRequiredStubOrPsiChild(SmaliElementTypes.IMPLEMENTS_LIST);
+        return getRequiredStubOrPsiChild(SmaliStubElementTypes.IMPLEMENTS_LIST);
     }
 
     @NotNull @Override public SmaliClassType[] getExtendsListTypes() {
@@ -171,7 +171,7 @@ public class SmaliClass extends SmaliStubBasedPsiElement<SmaliClassStub> impleme
     }
 
     @NotNull @Override public SmaliField[] getFields() {
-        SmaliField[] fields = getStubOrPsiChildren(SmaliElementTypes.FIELD, new SmaliField[0]);
+        SmaliField[] fields = getStubOrPsiChildren(SmaliStubElementTypes.FIELD, new SmaliField[0]);
         List<SmaliField> filteredFields = null;
         for (int i=fields.length-1; i>=0; i--) {
             SmaliField field = fields[i];
@@ -189,7 +189,7 @@ public class SmaliClass extends SmaliStubBasedPsiElement<SmaliClassStub> impleme
     }
 
     @NotNull @Override public SmaliMethod[] getMethods() {
-        return getStubOrPsiChildren(SmaliElementTypes.METHOD, new SmaliMethod[0]);
+        return getStubOrPsiChildren(SmaliStubElementTypes.METHOD, new SmaliMethod[0]);
     }
 
     @NotNull @Override public PsiMethod[] getConstructors() {
@@ -255,7 +255,7 @@ public class SmaliClass extends SmaliStubBasedPsiElement<SmaliClassStub> impleme
     }
 
     @Nullable public SmaliClassStatement getClassStatement() {
-        return getStubOrPsiChild(SmaliElementTypes.CLASS_STATEMENT);
+        return getStubOrPsiChild(SmaliStubElementTypes.CLASS_STATEMENT);
     }
 
     @Nullable @Override public SmaliClassDescriptor getNameIdentifier() {
@@ -356,7 +356,7 @@ public class SmaliClass extends SmaliStubBasedPsiElement<SmaliClassStub> impleme
     }
 
     @Nullable @Override public SmaliModifierList getModifierList() {
-        SmaliClassStatement classStatement = getStubOrPsiChild(SmaliElementTypes.CLASS_STATEMENT);
+        SmaliClassStatement classStatement = getStubOrPsiChild(SmaliStubElementTypes.CLASS_STATEMENT);
         if (classStatement == null) {
             return null;
         }
@@ -369,7 +369,7 @@ public class SmaliClass extends SmaliStubBasedPsiElement<SmaliClassStub> impleme
     }
 
     @NotNull @Override public SmaliAnnotation[] getAnnotations() {
-        return getStubOrPsiChildren(SmaliElementTypes.ANNOTATION, new SmaliAnnotation[0]);
+        return getStubOrPsiChildren(SmaliStubElementTypes.ANNOTATION, new SmaliAnnotation[0]);
     }
 
     @NotNull @Override public SmaliAnnotation[] getApplicableAnnotations() {
@@ -397,7 +397,7 @@ public class SmaliClass extends SmaliStubBasedPsiElement<SmaliClassStub> impleme
     @Nullable public Location getLocationForSourcePosition(@Nonnull ReferenceType type,
                                                            @Nonnull SourcePosition position) {
 
-        SmaliMethod[] smaliMethods = findChildrenByType(SmaliElementTypes.METHOD, SmaliMethod.class);
+        SmaliMethod[] smaliMethods = findChildrenByType(SmaliStubElementTypes.METHOD, SmaliMethod.class);
 
         for (SmaliMethod smaliMethod: smaliMethods) {
             //TODO: check the start line+end line of the method

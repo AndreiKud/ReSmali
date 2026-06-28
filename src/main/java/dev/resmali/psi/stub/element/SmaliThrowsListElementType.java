@@ -45,10 +45,6 @@ public class SmaliThrowsListElementType
         super("THROWS_LIST");
     }
 
-    @NotNull @Override public String getExternalId() {
-        return "smali.throws_list";
-    }
-
     @Override public SmaliThrowsList createPsi(@NotNull SmaliThrowsListStub stub) {
         return new SmaliThrowsList(stub);
     }

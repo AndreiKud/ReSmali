@@ -38,16 +38,9 @@ import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 public class SmaliLabelReference extends SmaliCompositeElement implements PsiReference {
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliLabelReference();
-        }
-    };
-
     public SmaliLabelReference() {
         super(SmaliElementTypes.LABEL_REFERENCE);
     }

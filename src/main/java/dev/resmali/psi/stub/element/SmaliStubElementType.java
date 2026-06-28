@@ -50,6 +50,10 @@ public abstract class SmaliStubElementType<StubT extends StubElement<?>, PsiT ex
         super(debugName, SmaliLanguage.INSTANCE);
     }
 
+    @NotNull @Override public String getExternalId() {
+        return "dev.resmali." + super.toString();
+    }
+
     public abstract PsiT createPsi(@NotNull ASTNode node);
 
     @Nullable

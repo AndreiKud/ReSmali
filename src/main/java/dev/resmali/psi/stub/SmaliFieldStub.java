@@ -35,7 +35,7 @@ import com.intellij.psi.stubs.StubBase;
 import com.intellij.psi.stubs.StubElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.impl.SmaliField;
 
 public class SmaliFieldStub extends StubBase<SmaliField> {
@@ -43,7 +43,7 @@ public class SmaliFieldStub extends StubBase<SmaliField> {
     @NotNull private final String smaliTypeName;
 
     public SmaliFieldStub(StubElement parent, @Nullable String name, @NotNull String smaliTypeName) {
-        super(parent,  SmaliElementTypes.FIELD);
+        super(parent,  SmaliStubElementTypes.FIELD);
         this.name = name;
         this.smaliTypeName = smaliTypeName;
     }

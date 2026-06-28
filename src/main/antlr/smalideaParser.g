@@ -39,6 +39,7 @@ import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
 import com.intellij.psi.tree.IElementType;
 import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -180,8 +181,8 @@ sync[boolean toEof]
 
 smali_file
   @init {
-    mark().done(SmaliElementTypes.EXTENDS_LIST);
-    mark().done(SmaliElementTypes.IMPLEMENTS_LIST);
+    mark().done(SmaliStubElementTypes.EXTENDS_LIST);
+    mark().done(SmaliStubElementTypes.IMPLEMENTS_LIST);
   }
   :
   (
@@ -200,7 +201,7 @@ smali_file
 class_spec
   @init { Marker marker = mark(); }
   : CLASS_DIRECTIVE class_access_list class_descriptor
-  { marker.done(SmaliElementTypes.CLASS_STATEMENT); };
+  { marker.done(SmaliStubElementTypes.CLASS_STATEMENT); };
   catch [RecognitionException re] {
     recover(input, re);
     reportError(marker, re, false);
@@ -239,7 +240,7 @@ source_spec
 class_access_list
   @init { Marker marker = mark(); }
   : ACCESS_SPEC*
-  { marker.done(SmaliElementTypes.MODIFIER_LIST); };
+  { marker.done(SmaliStubElementTypes.MODIFIER_LIST); };
   catch [RecognitionException re] {
     recover(input, re);
     reportError(marker, re, false);
@@ -248,7 +249,7 @@ class_access_list
 access_list
   @init { Marker marker = mark(); }
   : (ACCESS_SPEC | HIDDENAPI_RESTRICTION)*
-  { marker.done(SmaliElementTypes.MODIFIER_LIST); };
+  { marker.done(SmaliStubElementTypes.MODIFIER_LIST); };
   catch [RecognitionException re] {
     recover(input, re);
     reportError(marker, re, false);
@@ -279,13 +280,13 @@ field
     if (annotationsMarker != null) {
       if (gotEndField) {
         annotationsMarker.drop();
-        marker.done(SmaliElementTypes.FIELD);
+        marker.done(SmaliStubElementTypes.FIELD);
       } else {
-        marker.doneBefore(SmaliElementTypes.FIELD, annotationsMarker);
+        marker.doneBefore(SmaliStubElementTypes.FIELD, annotationsMarker);
         annotationsMarker.drop();
       }
     } else {
-      marker.done(SmaliElementTypes.FIELD);
+      marker.done(SmaliStubElementTypes.FIELD);
     }
   };
   catch [RecognitionException re] {
@@ -311,11 +312,11 @@ field_initializer
 method
   @init {
     Marker marker = mark();
-    mark().done(SmaliElementTypes.THROWS_LIST);
+    mark().done(SmaliStubElementTypes.THROWS_LIST);
   }
   : METHOD_DIRECTIVE access_list member_name method_prototype statements_and_directives
     end_method_directive
-  { marker.done(SmaliElementTypes.METHOD); };
+  { marker.done(SmaliStubElementTypes.METHOD); };
   catch [RecognitionException re] {
     recover(input, re);
     reportError(marker, re, false);
@@ -423,7 +424,7 @@ member_name_inner
 method_prototype
   @init { Marker marker = mark(); }
   : open_paren param_list close_paren type_descriptor
-    { marker.done(SmaliElementTypes.METHOD_PROTOTYPE); };
+    { marker.done(SmaliStubElementTypes.METHOD_PROTOTYPE); };
   catch [RecognitionException re] {
     recover(input, re);
     reportError(marker, re, false);
@@ -496,15 +497,15 @@ param_list_inner
 param_list
   @init { Marker marker = mark(); }
   : param_list_inner?
-    { marker.done(SmaliElementTypes.METHOD_PARAM_LIST); };
+    { marker.done(SmaliStubElementTypes.METHOD_PARAM_LIST); };
 
 param
   @init {
     Marker marker = mark();
-    mark().done(SmaliElementTypes.MODIFIER_LIST);
+    mark().done(SmaliStubElementTypes.MODIFIER_LIST);
   }
   : nonvoid_type_descriptor
-  { marker.done(SmaliElementTypes.METHOD_PARAMETER); };
+  { marker.done(SmaliStubElementTypes.METHOD_PARAMETER); };
   catch [RecognitionException re] {
     recover(input, re);
     reportError(marker, re, false);
@@ -722,7 +723,7 @@ subannotation
     annotation_element*
     { paramListMarker.done(SmaliElementTypes.ANNOTATION_PARAMETER_LIST); }
     end_subannotation_directive
-    { marker.done(SmaliElementTypes.ANNOTATION); };
+    { marker.done(SmaliStubElementTypes.ANNOTATION); };
   catch [RecognitionException re] {
     recover(input, re);
     reportError(marker, re, false);
@@ -838,7 +839,7 @@ annotation
     annotation_element*
     { paramListMarker.done(SmaliElementTypes.ANNOTATION_PARAMETER_LIST); }
     end_annotation_directive
-  { marker.done(SmaliElementTypes.ANNOTATION); };
+  { marker.done(SmaliStubElementTypes.ANNOTATION); };
 
 annotation_visibility
   : ANNOTATION_VISIBILITY;

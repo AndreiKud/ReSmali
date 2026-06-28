@@ -41,7 +41,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.iface.SmaliModifierListOwner;
 import dev.resmali.psi.stub.SmaliMethodParameterStub;
 import dev.resmali.util.NameUtils;
@@ -49,7 +49,7 @@ import dev.resmali.util.NameUtils;
 public class SmaliMethodParameter extends SmaliStubBasedPsiElement<SmaliMethodParameterStub>
         implements PsiParameter, SmaliModifierListOwner {
     public SmaliMethodParameter(@NotNull SmaliMethodParameterStub stub) {
-        super(stub, SmaliElementTypes.METHOD_PARAMETER);
+        super(stub, SmaliStubElementTypes.METHOD_PARAMETER);
     }
 
     public SmaliMethodParameter(@NotNull ASTNode node) {
@@ -57,7 +57,7 @@ public class SmaliMethodParameter extends SmaliStubBasedPsiElement<SmaliMethodPa
     }
 
     @NotNull @Override public SmaliModifierList getModifierList() {
-        return getRequiredStubOrPsiChild(SmaliElementTypes.MODIFIER_LIST);
+        return getRequiredStubOrPsiChild(SmaliStubElementTypes.MODIFIER_LIST);
     }
 
     @NotNull @Override public PsiElement getDeclarationScope() {

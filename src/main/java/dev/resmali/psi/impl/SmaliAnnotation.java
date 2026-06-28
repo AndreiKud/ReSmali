@@ -40,12 +40,12 @@ import com.intellij.psi.impl.PsiImplUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.stub.SmaliAnnotationStub;
 
 public class SmaliAnnotation extends SmaliStubBasedPsiElement<SmaliAnnotationStub> implements PsiAnnotation {
     public SmaliAnnotation(@NotNull SmaliAnnotationStub stub) {
-        super(stub, SmaliElementTypes.ANNOTATION);
+        super(stub, SmaliStubElementTypes.ANNOTATION);
     }
 
     public SmaliAnnotation(@NotNull ASTNode node) {

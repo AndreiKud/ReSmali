@@ -41,7 +41,6 @@ import com.intellij.lang.ASTNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import dev.resmali.SmaliTokens;
-import dev.resmali.psi.SmaliCompositeElementFactory;
 import dev.resmali.psi.SmaliElementTypes;
 
 import java.util.Arrays;
@@ -52,12 +51,6 @@ public class SmaliInstruction extends SmaliCompositeElement {
 
     @Nullable private Opcode opcode;
     private int offset = NO_OFFSET;
-
-    public static final SmaliCompositeElementFactory FACTORY = new SmaliCompositeElementFactory() {
-        @Override public SmaliCompositeElement createElement() {
-            return new SmaliInstruction();
-        }
-    };
 
     public SmaliInstruction() {
         super(SmaliElementTypes.INSTRUCTION);

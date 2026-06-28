@@ -34,7 +34,7 @@ package dev.resmali.psi.stub;
 import com.intellij.psi.stubs.StubBase;
 import com.intellij.psi.stubs.StubElement;
 import org.jetbrains.annotations.NotNull;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.impl.SmaliMethod;
 
 import javax.annotation.Nullable;
@@ -43,7 +43,7 @@ public class SmaliMethodStub extends StubBase<SmaliMethod> {
     @Nullable private final String name;
 
     public SmaliMethodStub(@NotNull StubElement parent, @Nullable String name) {
-        super(parent, SmaliElementTypes.METHOD);
+        super(parent, SmaliStubElementTypes.METHOD);
         this.name = name;
     }
 

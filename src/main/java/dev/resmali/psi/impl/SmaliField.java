@@ -42,7 +42,7 @@ import com.intellij.util.PlatformIcons;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.iface.SmaliModifierListOwner;
 import dev.resmali.psi.stub.SmaliFieldStub;
 import dev.resmali.util.IconUtils;
@@ -52,7 +52,7 @@ import javax.swing.*;
 
 public class SmaliField extends SmaliStubBasedPsiElement<SmaliFieldStub> implements PsiField, SmaliModifierListOwner, ItemPresentation {
     public SmaliField(@NotNull SmaliFieldStub stub) {
-        super(stub, SmaliElementTypes.FIELD);
+        super(stub, SmaliStubElementTypes.FIELD);
     }
 
     public SmaliField(@NotNull ASTNode node) {
@@ -73,7 +73,7 @@ public class SmaliField extends SmaliStubBasedPsiElement<SmaliFieldStub> impleme
     }
 
     @NotNull @Override public SmaliModifierList getModifierList() {
-        SmaliModifierList modifierList = getStubOrPsiChild(SmaliElementTypes.MODIFIER_LIST);
+        SmaliModifierList modifierList = getStubOrPsiChild(SmaliStubElementTypes.MODIFIER_LIST);
         assert modifierList != null;
         return modifierList;
     }
@@ -149,7 +149,7 @@ public class SmaliField extends SmaliStubBasedPsiElement<SmaliFieldStub> impleme
     }
 
     @NotNull @Override public SmaliAnnotation[] getAnnotations() {
-        return getStubOrPsiChildren(SmaliElementTypes.ANNOTATION, new SmaliAnnotation[0]);
+        return getStubOrPsiChildren(SmaliStubElementTypes.ANNOTATION, new SmaliAnnotation[0]);
     }
 
     @NotNull @Override public SmaliAnnotation[] getApplicableAnnotations() {

@@ -34,7 +34,7 @@ package dev.resmali.psi.stub;
 import com.intellij.psi.stubs.StubBase;
 import com.intellij.psi.stubs.StubElement;
 import org.jetbrains.annotations.Nullable;
-import dev.resmali.psi.SmaliElementTypes;
+import dev.resmali.psi.SmaliStubElementTypes;
 import dev.resmali.psi.impl.SmaliAnnotation;
 
 public class SmaliAnnotationStub extends StubBase<SmaliAnnotation> {
@@ -42,7 +42,7 @@ public class SmaliAnnotationStub extends StubBase<SmaliAnnotation> {
     private final String annotationSmaliTypeName;
 
     public SmaliAnnotationStub(StubElement parent, @Nullable String annotationSmaliTypeName) {
-        super(parent, SmaliElementTypes.ANNOTATION);
+        super(parent, SmaliStubElementTypes.ANNOTATION);
         this.annotationSmaliTypeName = annotationSmaliTypeName;
     }
 
