@@ -75,6 +75,7 @@ class AdbFixture(
         }
         adb.forceStop(config.appPackage)
         adb.clearDebugApp()
+        adb.uninstall(config.appPackage)
     }
 
     private fun waitForPid(packageName: String, timeout: Duration): Int? {
