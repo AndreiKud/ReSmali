@@ -2,13 +2,15 @@ package dev.resmali.integration
 
 import com.intellij.ide.starter.driver.engine.runIdeWithDriver
 import com.intellij.ide.starter.ide.IDETestContext
-import com.intellij.ide.starter.ide.IdeProductProvider
 import com.intellij.ide.starter.models.IdeInfo
 import com.intellij.ide.starter.models.TestCase
 import com.intellij.ide.starter.path.GlobalPaths
 import com.intellij.ide.starter.plugins.PluginConfigurator
 import com.intellij.ide.starter.project.LocalProjectInfo
 import com.intellij.ide.starter.runner.Starter
+import com.intellij.tools.ide.starter.product.android.studio.AndroidStudio
+import com.intellij.tools.ide.starter.product.idea.community.IdeaCommunity
+import com.intellij.tools.ide.starter.product.idea.ultimate.IdeaUltimate
 import dev.resmali.integration.adb.AdbFixture
 import dev.resmali.integration.config.IdeBuildType
 import dev.resmali.integration.config.IntegrationTestConfig
@@ -20,6 +22,8 @@ import org.kodein.di.bindSingleton
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.io.path.createDirectories
+import kotlin.io.path.writeText
 import com.intellij.ide.starter.di.di as starterDi
 
 class DebugPanelRegistersIntegrationSuite {
@@ -38,8 +42,8 @@ class DebugPanelRegistersIntegrationSuite {
     fun newAndroidStudio() {
         val config = IntegrationTestConfig(
             ideProductCode = "AI",
-            ideBuildType = IdeBuildType.RC,
-            ideBuildNumber = "2026.1.2.8",
+            ideBuildType = IdeBuildType.RELEASE,
+            ideBuildNumber = "2026.2.1.8", // Rabbit 1
         )
         registersAreVisibleWhenBreakpointHit(config)
     }
@@ -58,8 +62,8 @@ class DebugPanelRegistersIntegrationSuite {
     fun newIntelliJIdea() {
         val config = IntegrationTestConfig(
             ideProductCode = "IU",
-            ideBuildType = IdeBuildType.EAP,
-            ideBuildNumber = "262.7581.18",
+            ideBuildType = IdeBuildType.RELEASE,
+            ideBuildNumber = "262.10968.63",
         )
         registersAreVisibleWhenBreakpointHit(config)
     }
@@ -124,9 +128,9 @@ class DebugPanelRegistersIntegrationSuite {
         buildNumber: String?,
     ): IdeInfo {
         val baseIdeInfo = when (productCode.uppercase()) {
-            "AI" -> IdeProductProvider.AI
-            "IC" -> IdeProductProvider.IC
-            "IU" -> IdeProductProvider.IU
+            "AI" -> IdeInfo.AndroidStudio
+            "IC" -> IdeInfo.IdeaCommunity
+            "IU" -> IdeInfo.IdeaUltimate
             else -> error(
                 "Unsupported IDE product code '$productCode'. Supported values: AI, IC, IU",
             )
@@ -158,8 +162,29 @@ class DebugPanelRegistersIntegrationSuite {
     }
 
     private fun patchStartupPopups(context: IDETestContext, config: IntegrationTestConfig) {
-        // Prevent first-run onboarding dialogs from blocking driver automation.
-        context.disableMigrationNotification()
+        // Suppress first-session auto-trial and its editor tab.
+        context.removeMigrateConfigAndCreateStubFile()
+
+        if (config.ideProductCode == "AI") {
+            // "Login" modal window.
+            context.applyVMOptionsPatch {
+                addLine("-Dgoogle.login.enable.startup.sign.in.dialog=false")
+            }
+
+            // "What's New" tab.
+            val studioVersion = requireNotNull(config.ideBuildNumber)
+            val firstRunConfig = context.paths.configDir.resolve("options/androidStudioFirstRun.xml")
+            firstRunConfig.parent.createDirectories()
+            firstRunConfig.writeText(
+                """
+                <application>
+                  <component name="whatsNew">
+                    <shownVersion>$studioVersion</shownVersion>
+                  </component>
+                </application>
+                """.trimIndent(),
+            )
+        }
 
         // For EAP this opens the modal "Manage Subscriptions" dialog and blocks driver automation.
         if (config.ideProductCode == "IU" && config.ideBuildType == IdeBuildType.RC) {

@@ -12,7 +12,7 @@ plugins {
     id("java")
     id("antlr")
     id("org.jetbrains.kotlin.jvm") version "2.4.0"
-    id("org.jetbrains.intellij.platform") version "2.16.0"
+    id("org.jetbrains.intellij.platform") version "2.19.0"
 }
 
 val localProperties: Properties = Properties().apply {
@@ -34,18 +34,18 @@ val integrationTestRuntimeOnly: Configuration by configurations.getting {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
 }
 tasks {
     withType<JavaCompile>().configureEach {
-        options.release.set(if (name == "compileIntegrationTestJava") 21 else 17)
+        options.release.set(if (name == "compileIntegrationTestJava") 25 else 21)
     }
     withType<KotlinCompile>().configureEach {
         compilerOptions {
             val jvmTargetVersion = if (name == "compileIntegrationTestKotlin") {
-                JvmTarget.JVM_21
+                JvmTarget.JVM_25
             } else {
-                JvmTarget.JVM_17
+                JvmTarget.JVM_21
             }
             jvmTarget.set(jvmTargetVersion)
             freeCompilerArgs.add("-Xjdk-release=${jvmTargetVersion.target}")
@@ -59,7 +59,7 @@ intellijPlatform {
         ides {
             create {
                 type = IntelliJPlatformType.IntellijIdea
-                version = "262.7581.18" // 2026.2 EAP 6, 12 Jun 2026
+                version = "2026.2.3"
             }
             create {
                 type = IntelliJPlatformType.IntellijIdeaCommunity
@@ -80,34 +80,33 @@ repositories {
 
 dependencies {
     intellijPlatform {
-        intellijIdea("2026.1.3")
-        // androidStudio("2025.2.3.9")
+        intellijIdea("2026.2.3")
         bundledPlugin("com.intellij.java")
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Plugin.Java)
         testFramework(TestFrameworkType.Starter, configurationName = "integrationTestImplementation")
     }
 
-    implementation("com.android.tools.smali:smali:3.0.9")
-    implementation("com.android.tools.smali:smali-util:3.0.9")
-
-    implementation("org.antlr:antlr-runtime:3.5.2")
-    implementation("com.google.code.gson:gson:2.8.9")
     antlr("org.antlr:antlr:3.5.3")
 
-    testImplementation("junit:junit:4.13.2")
-    integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    implementation("com.android.tools.smali:smali:3.0.9")
+    implementation("com.android.tools.smali:smali-util:3.0.9")
+    implementation("org.antlr:antlr-runtime:3.5.2")
+    implementation("com.google.code.gson:gson:2.8.9")
+    // TODO: move from javax.annotations to org.jetbrains.annotations
+    implementation("com.github.spotbugs:spotbugs-annotations:4.9.7")
 
+    testImplementation("junit:junit:4.13.2")
+
+    integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     // Starter runtime support since we ship with 'kotlin.stdlib.default.dependency = false'
     integrationTestImplementation(platform("org.jetbrains.kotlin:kotlin-bom:2.3.20"))
-
     integrationTestImplementation("org.assertj:assertj-core:3.27.7")
     integrationTestImplementation("org.kodein.di:kodein-di-jvm:7.20.2")
     integrationTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.1")
     integrationTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-    // TODO: move from javax.annotations to org.jetbrains.annotations
-    implementation("com.github.spotbugs:spotbugs-annotations:4.9.7")
+    // Starter reports test metadata through TeamCityReporter even during local runs.
+    integrationTestRuntimeOnly("org.jetbrains.teamcity:serviceMessages:2024.07")
 }
 
 fun JavaExec.setupIdeExec() {
@@ -124,6 +123,11 @@ val currentVersion: String = "0.11"
 version = currentVersion
 
 tasks {
+    test {
+        // TEMP: org.jetbrains.intellij.platform 2.18 bug
+        systemProperty("idea.load.plugins.id", "dev.resmali,com.intellij.java")
+    }
+
     patchPluginXml {
         pluginId = "dev.resmali"
         pluginName = "ReSmali"

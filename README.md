@@ -6,9 +6,6 @@ ReSmali is a fork of the original [smalidea](https://github.com/JesusFreke/smali
 Renamed to comply with
 JetBrains' [plugin name policy](https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html?_cl=MTsxOzE7V3RwUWFGU1hRcUpnUFRmaHMwQ1hITnpiVTlwZ25RRnpzY1Z2V3A3RTZ6OE5BVW1ISTZ2eFZ3bzQxZEY5OXY1STs%3D#plugin-name).
 
-> [!WARNING]  
-> Plugin is still in the development stage and bugs are expected. Please report any issues. Thank you.
-
 ![debugging screenshot](docs/images/main.png)
 
 # Features
@@ -34,6 +31,15 @@ The resulting ZIP file is located in `./build/distributions/` and can then be in
 the IDE
 via [Install Plugin from Disk](https://www.jetbrains.com/help/idea/managing-plugins.html#install_plugin_from_disk)
 action.
+
+# Testing Changes
+
+Contributors should run all three checks after making changes:
+
+- Unit tests: `./gradlew test` (reports are in `build/reports/tests/test`);
+- Integration tests: `./gradlew integrationTest` (reports are in `build/reports/tests/integrationTest`). 
+Requires `adb` on `PATH`, and one connected, authorized Android device or emulator;
+- Compatibility checks: `./gradlew verifyPlugin` (reports are in `build/reports/pluginVerifier`).
 
 # How to Use
 
