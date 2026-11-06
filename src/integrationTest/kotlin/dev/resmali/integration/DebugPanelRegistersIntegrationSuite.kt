@@ -43,7 +43,7 @@ class DebugPanelRegistersIntegrationSuite {
         val config = IntegrationTestConfig(
             ideProductCode = "AI",
             ideBuildType = IdeBuildType.RELEASE,
-            ideBuildNumber = "2026.2.1.8", // Rabbit 1
+            ideBuildNumber = "2026.2.2.8", // Rabbit 2
         )
         registersAreVisibleWhenBreakpointHit(config)
     }
@@ -63,7 +63,7 @@ class DebugPanelRegistersIntegrationSuite {
         val config = IntegrationTestConfig(
             ideProductCode = "IU",
             ideBuildType = IdeBuildType.RELEASE,
-            ideBuildNumber = "262.10968.63",
+            ideBuildNumber = "263.7307.200",
         )
         registersAreVisibleWhenBreakpointHit(config)
     }
@@ -99,7 +99,8 @@ class DebugPanelRegistersIntegrationSuite {
                 config = config,
             )
 
-            context.runIdeWithDriver().executeDebugScenario(config, fixture)
+            // TODO: turn pauseOnIndicators on when upping minversion
+            context.runIdeWithDriver(pauseOnIndicators = null).executeDebugScenario(config, fixture)
         } catch (error: Throwable) {
             primaryFailure = error
             runCatching { fixture.collectFailureArtifacts(error) }.onFailure(error::addSuppressed)

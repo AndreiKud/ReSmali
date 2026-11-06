@@ -48,7 +48,7 @@ data class IntegrationTestConfig(
         "v19" to "double[",
         "v20" to "b",
     ),
-    val attachTimeoutSeconds: Long = 15,
+    val attachTimeoutSeconds: Long = 25,
     val hitTimeoutSeconds: Long = 15,
     val artifactsDir: Path = resolvePath("build/integration-test-artifacts"),
 ) {

@@ -4,7 +4,7 @@ import com.intellij.driver.client.Remote
 import com.intellij.driver.sdk.Project
 import com.intellij.driver.sdk.VirtualFile
 
-@Remote("com.intellij.xdebugger.XDebuggerUtil")
+@Remote("com.intellij.xdebugger.XDebuggerUtil", plugin = "dev.resmali")
 interface XDebuggerUtilRef {
     fun toggleLineBreakpoint(project: Project, file: VirtualFile, line: Int, temporary: Boolean)
     fun canPutBreakpointAt(project: Project, file: VirtualFile, line: Int): Boolean

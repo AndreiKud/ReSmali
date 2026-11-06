@@ -42,7 +42,7 @@ class SmaliHighlighter : SyntaxHighlighterBase() {
         return SmaliLexer()
     }
 
-    override fun getTokenHighlights(tokenType: IElementType?): Array<TextAttributesKey> {
+    override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {
         if (tokenType is SmaliLexicalElementType) {
             return tokenType.textAttributesKeys
         }

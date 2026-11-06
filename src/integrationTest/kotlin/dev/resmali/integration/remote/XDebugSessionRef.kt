@@ -2,7 +2,7 @@ package dev.resmali.integration.remote
 
 import com.intellij.driver.client.Remote
 
-@Remote("com.intellij.xdebugger.XDebugSession")
+@Remote("com.intellij.xdebugger.XDebugSession", plugin = "dev.resmali")
 interface XDebugSessionRef {
     fun getSessionName(): String
     fun isSuspended(): Boolean

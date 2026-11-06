@@ -4,16 +4,18 @@ import com.intellij.driver.client.Driver
 import com.intellij.driver.client.service
 import com.intellij.driver.model.LockSemantics
 import com.intellij.driver.model.OnDispatcher
+import com.intellij.driver.sdk.DumbService
 import com.intellij.driver.sdk.Project
 import com.intellij.driver.sdk.findFile
-import com.intellij.driver.sdk.openFile
+import com.intellij.driver.sdk.openEditor
 import com.intellij.driver.sdk.openToolWindow
 import com.intellij.driver.sdk.singleProject
-import com.intellij.driver.sdk.ui.components.common.ideFrame
-import com.intellij.driver.sdk.ui.components.common.toolwindows.DebugToolWindowUi
-import com.intellij.driver.sdk.ui.components.common.toolwindows.debugToolWindow
+import com.intellij.driver.sdk.ui.Finder
 import com.intellij.driver.sdk.ui.components.elements.tree
+import com.intellij.driver.sdk.ui.ui
 import com.intellij.driver.sdk.ui.xQuery
+import com.intellij.driver.sdk.waitFor
+import com.intellij.driver.sdk.waitForCodeAnalysis
 import com.intellij.driver.sdk.waitNotNull
 import com.intellij.ide.starter.driver.engine.BackgroundRun
 import dev.resmali.integration.adb.AdbFixture
@@ -55,7 +57,16 @@ private fun Driver.runDebuggerFlow(config: IntegrationTestConfig, fixture: AdbFi
     var activeSession: XDebugSessionRef? = null
 
     try {
-        openFile(config.breakpointFileRelativePath, project = project, waitForCodeAnalysis = true)
+        // Older IDEs lack the toolbar widget required by Driver.openFile's readiness check.
+        val file = waitNotNull(timeout = config.attachTimeoutSeconds.seconds) {
+            findFile(relativePath = config.breakpointFileRelativePath, project = project)
+        }
+        openEditor(file, project)
+        waitForCodeAnalysis(project, file)
+        // Debugger value rendering resolves PSI through indexes, so highlighting alone is not enough.
+        waitFor(message = "Wait for project indexing", timeout = 60.seconds) {
+            !service<DumbService>(project).isDumb()
+        }
 
         setLineBreakpointWithReadAction(
             project = project,
@@ -401,11 +412,11 @@ private fun assertBreakpointLocation(session: XDebugSessionRef, config: Integrat
 
 private fun Driver.captureDebugPanelTexts(): List<String> {
     openToolWindow("Debug")
-    val debugUi = ideFrame().debugToolWindow()
-    return collectDebugPanelTexts(debugUi)
+    // Find the debugger tree directly to avoid IdeaFrameUI's version-specific toolbar check.
+    return collectDebugPanelTexts(ui)
 }
 
-private fun collectDebugPanelTexts(debugUi: DebugToolWindowUi): List<String> {
+private fun collectDebugPanelTexts(debugUi: Finder): List<String> {
     val snapshot = linkedSetOf<String>()
 
     try {

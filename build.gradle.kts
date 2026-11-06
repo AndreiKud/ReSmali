@@ -37,6 +37,7 @@ kotlin {
     jvmToolchain(25)
 }
 tasks {
+    // Keep the plugin bytecode compatible with the Java 21 runtime for older IDEs.
     withType<JavaCompile>().configureEach {
         options.release.set(if (name == "compileIntegrationTestJava") 25 else 21)
     }
@@ -59,7 +60,7 @@ intellijPlatform {
         ides {
             create {
                 type = IntelliJPlatformType.IntellijIdea
-                version = "2026.2.3"
+                version = "2026.3"
             }
             create {
                 type = IntelliJPlatformType.IntellijIdeaCommunity
@@ -80,11 +81,13 @@ repositories {
 
 dependencies {
     intellijPlatform {
-        intellijIdea("2026.2.3")
+        intellijIdea("2026.3")
         bundledPlugin("com.intellij.java")
+        bundledModule("intellij.platform.debugger")
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Plugin.Java)
         testFramework(TestFrameworkType.Starter, configurationName = "integrationTestImplementation")
+        testBundledPlugins("com.intellij.modules.ultimate")
     }
 
     antlr("org.antlr:antlr:3.5.3")
@@ -103,7 +106,7 @@ dependencies {
     integrationTestImplementation(platform("org.jetbrains.kotlin:kotlin-bom:2.3.20"))
     integrationTestImplementation("org.assertj:assertj-core:3.27.7")
     integrationTestImplementation("org.kodein.di:kodein-di-jvm:7.20.2")
-    integrationTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.1")
+    integrationTestImplementation("org.jetbrains.intellij.deps.kotlinx:kotlinx-coroutines-core-jvm:1.11.0-intellij-1")
     integrationTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
     // Starter reports test metadata through TeamCityReporter even during local runs.
     integrationTestRuntimeOnly("org.jetbrains.teamcity:serviceMessages:2024.07")
@@ -123,11 +126,6 @@ val currentVersion: String = "0.11"
 version = currentVersion
 
 tasks {
-    test {
-        // TEMP: org.jetbrains.intellij.platform 2.18 bug
-        systemProperty("idea.load.plugins.id", "dev.resmali,com.intellij.java")
-    }
-
     patchPluginXml {
         pluginId = "dev.resmali"
         pluginName = "ReSmali"
@@ -147,7 +145,7 @@ tasks {
 
         changeNotes = """
             <ul>
-                <li>Support for 2026.2 (min version raised from 2025.1 to 2025.2).</li>
+                <li>Support for IntelliJ IDEA 2026.3.</li>
             </ul>
         """.trimIndent()
 
