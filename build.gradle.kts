@@ -12,7 +12,7 @@ plugins {
     id("java")
     id("antlr")
     id("org.jetbrains.kotlin.jvm") version "2.4.0"
-    id("org.jetbrains.intellij.platform") version "2.19.0"
+    id("org.jetbrains.intellij.platform") version "2.20.0"
 }
 
 val localProperties: Properties = Properties().apply {
@@ -87,7 +87,6 @@ dependencies {
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Plugin.Java)
         testFramework(TestFrameworkType.Starter, configurationName = "integrationTestImplementation")
-        testBundledPlugins("com.intellij.modules.ultimate")
     }
 
     antlr("org.antlr:antlr:3.5.3")
